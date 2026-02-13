@@ -932,10 +932,6 @@ async function startInPageReminders() {
   scheduleDailyAt(21, 0, "Night reflection", "Want to write a quick diary entry?");
 }
 
-const savedBg = localStorage.getItem("indexBg");
-if (savedBg) {
-  document.querySelector(".bgimg").style.backgroundImage = `url('${savedBg}')`;
-}
 
 const PROMPTS_KEY = "customPrompts";
 const DEFAULT_PROMPT = "How was your day?";

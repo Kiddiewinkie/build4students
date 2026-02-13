@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+    <style>
+        /* --- MINECRAFT COFFEE THEME --- */
+        :root {
+            --coffee-dark: #6F4E37;
+            --coffee-light: #8B5A2B;
+            --cream: #f6f4ef;
+            --gold: #E1C16E;
+            --alert-red: #cc4444;
+        }
+
+        body {
+            width: 320px; /* Standard popup width */
+            height: 400px;
+            background-color: var(--cream);
+            color: var(--coffee-dark);
+            font-family: "Press Start 2P", monospace;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border: 4px solid var(--coffee-dark);
+        }
+
+        /* The Header */
+        header {
+            text-align: center;
+            border-bottom: 2px dashed var(--coffee-dark);
+            padding-bottom: 15px;
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            font-size: 16px;
+            color: var(--coffee-dark);
+            margin: 0;
+            line-height: 1.5;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 8px;
+            color: var(--coffee-light);
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        /* The Stat Cards */
+        .stat-card {
+            background: rgba(111, 78, 55, 0.1);
+            border: 2px solid var(--coffee-dark);
+            border-radius: 8px; /* Slight rounded for 'coffee' feel */
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 4px 4px 0px rgba(111, 78, 55, 0.2);
+        }
+
+        .label {
+            font-size: 10px;
+            color: var(--coffee-dark);
+        }
+
+        .value {
+            font-size: 14px;
+            color: var(--coffee-dark);
+        }
+
+        /* Special coloring for high stress */
+        .value.high {
+            color: var(--alert-red);
+            text-shadow: 1px 1px 0px #000;
+        }
+
+        /* The Status Bar */
+        .status-box {
+            background: var(--coffee-dark);
+            color: var(--gold);
+            padding: 15px;
+            text-align: center;
+            font-size: 10px;
+            line-height: 1.6;
+            border-radius: 4px;
+            margin-top: auto; /* Pushes to bottom */
+            border: 2px solid #000;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* A little pixel heart animation */
+        .pixel-heart {
+            display: inline-block;
+            animation: beat 1s infinite;
+        }
+
+        @keyframes beat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--cream);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--coffee-dark);
+        }
+    </style>
+    <script src="popup.js" defer></script>
+</head>
+<body>
+
+    <header>
+        <h1>BIOMETRIC<br>MONITOR</h1>
+        <div class="subtitle">v1.0 // SENSOR ACTIVE</div>
+    </header>
+
+    <div class="stat-card">
+        <div class="label">STRESS</div>
+        <div class="value" id="stress-val">0%</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="label">FATIGUE</div>
+        <div class="value" id="slug-val">0/10</div>
+    </div>
+
+    <div class="status-box">
+        <div>STATUS:</div>
+        <div id="status-val" style="margin-top: 8px; font-size: 12px;">CALCULATING...</div>
+    </div>
+
+</body>
+</html>

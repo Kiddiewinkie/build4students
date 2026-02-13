@@ -190,41 +190,6 @@
       border-color: rgba(110, 38, 14, 0.25);
     }
 
-    /* ===== Theme grid ===== */
-    .theme-grid{
-      display:grid;
-      grid-template-columns: repeat(3, minmax(0,1fr));
-      gap: 12px;
-      margin-top: 10px;
-    }
-
-    .theme-tile{
-      border: 1px solid rgba(54,69,79,0.18);
-      border-radius: 12px;
-      background: rgba(255,255,255,0.75);
-      cursor:pointer;
-      overflow:hidden;
-      padding: 10px;
-    }
-
-    .theme-thumb{
-      height: 80px;
-      border-radius: 10px;
-      background-size: cover;
-      background-position: center;
-      border: 1px solid rgba(54,69,79,0.15);
-    }
-
-    .theme-name{
-      margin-top: 10px;
-      font-size: 9px;
-      color: var(--ink);
-    }
-
-    .theme-tile.selected{
-      border-color: rgba(110, 38, 14, 0.35);
-      box-shadow: 0 0 0 2px rgba(110, 38, 14, 0.12) inset;
-    }
 
     /* ===== Toggle switch ===== */
     .toggle-row{
@@ -501,13 +466,6 @@
           <div class="card">
             <h3>Personalisation</h3>
 
-            <!-- THEME -->
-            <div class="row" style="display:block;">
-              <div class="label">Theme</div>
-              <div class="desc">Choose your index.html background.</div>
-              <div id="themeGrid" class="theme-grid"></div>
-            </div>
-
             <!-- NOTIFICATIONS -->
             <div class="toggle-row">
               <div>
@@ -622,49 +580,7 @@
       document.querySelector(".settings-main").scrollTop = 0;
     }
 
-    // ===== PERSONALISATION: THEMES + TOGGLE =====
-    const THEMES = [
-      {
-        id: "pixel-room",
-        name: "Pixel Room (default)",
-        url: "https://i.pinimg.com/originals/99/cd/09/99cd0925c516b5d0a740dffd03c3e0df.gif"
-      },
-      {
-        id: "diary-room",
-        name: "Diary Room",
-        url: "https://i.pinimg.com/originals/72/0c/c4/720cc43d757ee638ad5054a05220fafe.gif"
-      },
-      {
-        id: "cozy-photo",
-        name: "Cozy Photo",
-        url: "https://i.pinimg.com/736x/ef/1e/63/ef1e635913352f3641fdbadfd2898bbb.jpg"
-      }
-    ];
-
-    const THEME_KEY = "indexBg";
     const NOTIF_KEY = "notifEnabled";
-
-    function renderThemeGrid(){
-      const grid = document.getElementById("themeGrid");
-      const saved = localStorage.getItem(THEME_KEY) || THEMES[0].url;
-      grid.innerHTML = "";
-
-      THEMES.forEach(t => {
-        const tile = document.createElement("div");
-        tile.className = "theme-tile" + (t.url === saved ? " selected" : "");
-        tile.innerHTML = `
-          <div class="theme-thumb" style="background-image:url('${t.url}')"></div>
-          <div class="theme-name">${t.name}</div>
-        `;
-
-        tile.addEventListener("click", () => {
-          localStorage.setItem(THEME_KEY, t.url);
-          renderThemeGrid();
-        });
-
-        grid.appendChild(tile);
-      });
-    }
 
     function initNotifToggle(){
       const toggle = document.getElementById("notifToggle");
@@ -676,7 +592,6 @@
       });
     }
 
-    renderThemeGrid();
     initNotifToggle();
 
     // ================================

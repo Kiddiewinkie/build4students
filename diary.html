@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>W3.CSS Template</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+
+
+    <style>  
+    /* fonts */
+    .hero-title {
+      font-family: "DM Serif Display", serif;
+      font-size: 64px;
+      font-weight: 400;
+      margin-bottom: 24px;
+      color: #FFEA00;
+    }
+
+    .minecraft-font {
+      font-family: "Press Start 2P", monospace;
+      letter-spacing: 0.5px;
+      font-size: 20px;
+      font-weight: 200;
+      color: #6F4E37
+    }
+
+    body, html {
+      height: 100%;
+      font-family: "Press Start 2P", monospace;
+      font-size: 10px;
+      font-weight: 10;
+      color: #818589;
+    }
+
+    .diary-bg {
+      background-image: url("https://i.pinimg.com/originals/72/0c/c4/720cc43d757ee638ad5054a05220fafe.gif");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+    }
+
+
+    .input {
+      display: none;
+    }
+
+    .page-bg {
+      background-color: #f6f4ef;
+      min-height: 100vh;
+    }
+
+    
+    .nav-shell {
+      display: flex;
+      justify-content: space-between; /* left group vs right group */
+      align-items: center;
+      padding: 8px 16px;
+    }
+
+    /* Left group stays left */
+    .nav-left {
+      display: flex;
+      gap: 100px;              /* equal spacing between HOME/ABOUT/DIARY */
+      align-items: center;
+      color: #36454F;
+    }
+
+    /* Right group stays right */
+    .nav-right {
+      display: flex;
+      gap: 12px;              /* spacing between LOG IN / SIGN UP */
+      align-items: center;
+      color: #36454F;
+    }
+
+    /* space under fixed navbar */
+    .page-content {
+      padding-top: 70px;  /* adjust if your navbar is taller/shorter */
+    }
+
+
+
+
+
+    /* ---- Diary split layout (left calendar, right empty) ---- */
+    .diary-main{
+      padding-top: 70px;          /* keeps content under fixed navbar */
+      min-height: 100vh;
+    }
+
+    .diary-split{
+      display: flex;
+      gap: 24px;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .left-panel{
+      width: 50%;
+      min-width: 320px;
+    }
+
+    .right-panel{
+      width: 50%;
+      min-height: 600px;
+      /* left empty for now */
+    }
+
+    /* ---- Calendar card ---- */
+    .calendar-card{
+      background: rgba(246,244,239,0.9);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    /* Header: month + arrows */
+    .cal-header{
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .cal-actions{
+      display:flex;
+      gap: 8px;
+    }
+
+    .cal-btn{
+      background:#6F4E37;
+      color:#f6f4ef;
+      border:none;
+      width:40px;
+      height:40px;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:18px;
+    }
+    .cal-btn:hover{ filter: brightness(0.92); }
+
+    /* Weekday row */
+    .weekdays{
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+
+      font-family: "Press Start 2P", monospace;
+      font-size: 9px;
+      color: #6F4E37;
+    }
+
+    .weekdays div{
+      text-align:center;
+      padding: 6px 0;
+    }
+
+    /* Day grid */
+    .days{
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .day{
+      height: 54px;
+      border-radius: 12px;
+      background: rgba(111,78,55,0.10);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+
+      font-family: "Press Start 2P", monospace;
+      font-size: 7px;        /* important: Minecraft font is BIG */
+    }
+
+
+    .day:hover{
+      background: rgba(111,78,55,0.18);
+    }
+
+    .day.muted{
+      opacity:0.35;
+    }
+
+    .day.today{
+      outline: 2px solid #6F4E37;
+      outline-offset: -2px;
+    }
+
+    .day.selected{
+      background:#6F4E37;
+      color:#f6f4ef;
+    }
+
+    .calendar-title {
+      font-family: "Press Start 2P", monospace;
+      font-size:35px;
+      letter-spacing: 1.5px;
+      color: #E1C16E;
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    /* Prevent whole page scroll (diary section manages its own height) */
+    .diary-main {
+      height: calc(100vh - 70px);  /* 70px = your navbar offset */
+      overflow: hidden;
+    }
+
+    /* Make the split take full height */
+    .diary-split {
+      height: 100%;
+    }
+
+    /* Right panel scroll container */
+    .entries-card{
+      background: rgba(246,244,239,0.90);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      height: auto;   /* don’t stretch */
+    }
+
+    .calendar-card,
+    .entries-card{
+      height: 425px;          /* adjust to what looks right */
+    }
+
+
+
+    .entries-header {
+      margin-bottom: 12px;
+    }
+
+    .entries-title {
+      font-family: "Press Start 2P", monospace;
+      font-size: 20px;
+      color: #6F4E37;
+      margin-bottom: 8px;
+    }
+
+    .entries-sub {
+      font-family: "Press Start 2P", monospace;
+      font-size: 9px;
+      color: #6F4E37;
+      opacity: 0.75;
+    }
+
+    /* This is the ONLY thing that scrolls */
+    .entries-list {
+      overflow-y: auto;
+      padding-right: 6px;
+      flex: 1;                 /* takes remaining height */
+    }
+
+    /* Each diary entry block */
+    .entry-item {
+      background: rgba(111,78,55,0.10);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .entry-time {
+      font-family: "Press Start 2P", monospace;
+      font-size: 8px;
+      color: #6F4E37;
+      opacity: 0.85;
+      margin-bottom: 8px;
+    }
+
+    .entry-text {
+      font-family: "Press Start 2P", monospace;
+      font-size: 9px;
+      line-height: 1.6;   /* makes it less “squashed” */
+      color: #36454F;
+    }
+
+    .entries-empty {
+      font-family: "Press Start 2P", monospace;
+      font-size: 9px;
+      opacity: 0.6;
+      color: #6F4E37;
+    }
+
+    .entries-top-spacer {
+      height: 67px; /* tweak until it lines up perfectly */
+    }
+
+    .day.has-entry {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 6px;
+      text-decoration-color: #6F4E37; /* 👈 change this to any colour you want */
+    }
+
+    .entry-actions{
+      display:flex;
+      justify-content:flex-end;
+      margin-top:10px;
+    }
+
+    .delete-btn{
+      font-family: "Press Start 2P", monospace;
+      font-size: 8px;
+      padding: 8px 10px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: rgba(111,78,55,0.18);
+      color: #6F4E37;
+    }
+
+    .delete-btn:hover{
+      filter: brightness(0.95);
+    }
+
+    .modal-title {
+      font-family: "Press Start 2P", monospace;
+      font-size: 12px;          /* pixel fonts look better smaller */
+      font-weight: normal;
+      letter-spacing: 1px;
+      color: #6F4E37;
+      margin-bottom: 16px;
+    }
+
+    .tablink {
+      font-family: "Press Start 2P", monospace;
+      font-size: 11px;          /* slightly smaller but cleaner */
+      line-height: 0.1;         /* KEY FIX: adds vertical space */
+      padding: 12px 0;          /* vertical breathing room */
+      letter-spacing: 1px;      /* pixel fonts love spacing */
+      color: #36454F;
+      cursor: pointer;
+    }
+
+
+    .modal-content,
+    .modal-content input,
+    .modal-content button {
+      letter-spacing: 0.3px;
+    }
+
+    .close {
+      font-size: 16px;
+      color: #36454F;
+    }
+
+    .modal-title {
+      font-family: "Press Start 2P", monospace;
+      font-size: 14px;      /* smaller & cleaner */
+      font-weight: normal;
+      color: #36454F;
+      margin-bottom: 24px;
+    }
+
+        /* Modal background */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    /* Modal box */
+    .modal-content {
+      background: #f6f4ef;
+      width: 90%;
+      max-width: 400px;
+      margin: 10% auto;
+      padding: 32px;
+      border-radius: 8px;
+      position: relative;
+      text-align: center;
+    }
+
+    /* --- LOGIN / SIGN UP MODAL TYPOGRAPHY --- */
+    .modal-content {
+      font-family: "Press Start 2P", monospace;
+      font-size: 10px;          /* smaller + readable */
+      line-height: 1.6;
+      color: #36454F;
+    }
+
+    /* Modal title */
+    .modal-content h2 {
+      font-family: "Press Start 2P", monospace;
+      font-size: 14px;
+      font-weight: normal;
+      margin-bottom: 20px;
+    }
+
+    /* Inputs */
+    .modal-content input {
+      font-family: "Press Start 2P", monospace;
+      font-size: 9px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    /* Login / Signup button */
+    .modal-content button {
+      font-family: "Press Start 2P", monospace;
+      font-size: 10px;
+      padding: 14px 0;
+    }
+
+    /* Switch text */
+    .modal-switch {
+      font-size: 9px;
+      line-height: 1.6;
+    }
+
+    .modal-switch span {
+      font-size: 9px;
+      font-weight: normal;
+    }
+
+
+    /* Close button */
+    .close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    /* Switch text */
+    .modal-switch {
+      margin-top: 16px;
+      font-size: 14px;
+    }
+
+    .modal-switch span {
+      color: #6F4E37;
+      cursor: pointer;
+      font-weight: 300;
+      font-size: 14px;
+    }
+
+    </style>
+  </head>
+
+
+
+<body>
+
+
+<div class="page-bg">
+  <div class="w3-top">
+    <div class="w3-sand nav-shell">
+
+      <div class="nav-left">
+        <a href="index.html" class="w3-bar-item w3-button">HOME</a>
+        <a href="index.html#about" class="w3-bar-item w3-button">ABOUT</a>
+        <a href="diary.html" class="w3-bar-item w3-button">DIARY</a>
+        <a href="settings.html" class="w3-bar-item w3-button">SETTINGS</a>
+      </div>
+
+      <!-- Right buttons -->
+      <div class="nav-right">
+        <a href="javascript:void(0)" class="w3-bar-item w3-button w3-border w3-round"
+          onclick="openModal('loginModal')">LOG IN</a>
+
+        <a href="javascript:void(0)" class="w3-bar-item w3-button w3-border w3-round"
+          onclick="openModal('signupModal')">SIGN UP</a>
+      </div>
+
+    </div>
+  </div>
+
+<!-- MAIN DIARY CONTENT -->
+<div class="diary-main diary-bg">
+  <div class="diary-split">
+
+    <!-- LEFT: CALENDAR -->
+    <div class="left-panel">
+      <div class="calendar-title pixel-title">
+        My Diary
+      </div>
+
+
+      <div class="calendar-card">
+
+        <div class="cal-header">
+          <h2 class="minecraft-font" id="calMonthLabel">Month YYYY</h2>
+
+
+          <div class="cal-actions">
+            <button class="cal-btn" id="prevMonthBtn">&#10094;</button>
+            <button class="cal-btn" id="nextMonthBtn">&#10095;</button>
+          </div>
+        </div>
+
+        <div class="weekdays">
+          <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+        </div>
+
+        <div class="days" id="calDays"></div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: EMPTY (for future) -->
+    <div class="right-panel">
+      <div class="entries-top-spacer"></div>
+        <div class="entries-card">
+          <div class="entries-header">
+            <div class="entries-title">Entries</div>
+            <div class="entries-sub" id="entriesDateLabel">Select a date</div>
+          </div>
+
+          <div class="entries-list" id="entriesList">
+            <div class="entries-empty">No entries yet.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+
+
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('loginModal')">&times;</span>
+
+    <h2 class="modal-title">Log In</h2>
+
+
+    <input class="w3-input w3-border" type="email" placeholder="Email">
+    <input class="w3-input w3-border" type="password" placeholder="Password" style="margin-top:12px;">
+
+    <button class="w3-button w3-dark-grey w3-margin-top w3-block">
+      Log In
+    </button>
+
+    <p class="modal-switch">
+      Don’t have an account?
+      <span onclick="switchToSignup()">Sign up here</span>
+    </p>
+  </div>
+</div>
+
+<!-- SIGN UP MODAL -->
+<div id="signupModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('signupModal')">&times;</span>
+
+    <h2 class="modal-title">Sign Up</h2>
+
+    <input class="w3-input w3-border" type="text" placeholder="Name">
+    <input class="w3-input w3-border" type="email" placeholder="Email" style="margin-top:12px;">
+    <input class="w3-input w3-border" type="password" placeholder="Password" style="margin-top:12px;">
+
+    <button class="w3-button w3-dark-grey w3-margin-top w3-block">
+      Create Account
+    </button>
+
+    <p class="modal-switch">
+      Already have an account?
+      <span onclick="switchToLogin()">Log in here</span>
+    </p>
+  </div>
+</div>
+  
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <h2 class="modal-title">Delete entry?</h2>
+
+    <p class="pixel-body">
+      This action cannot be undone.
+    </p>
+
+    <div style="display:flex; gap:12px; justify-content:center; margin-top:24px;">
+      <button id="confirmDeleteBtn" class="w3-button w3-dark-grey w3-round">
+        Delete
+      </button>
+
+      <button onclick="closeDeleteModal()" class="w3-button w3-light-grey w3-round">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+let pendingDeleteId = null;
+let pendingDeleteDate = null;
+
+
+function makeId() {
+  return (crypto.randomUUID ? crypto.randomUUID()
+    : ("id_" + Date.now() + "_" + Math.random().toString(16).slice(2)));
+}
+
+function migrateEntriesAddIds() {
+  const all = JSON.parse(localStorage.getItem("diaryEntries")) || [];
+  let changed = false;
+
+  for (const e of all) {
+    if (!e.id) {
+      e.id = makeId();
+      changed = true;
+    }
+  }
+
+  if (changed) localStorage.setItem("diaryEntries", JSON.stringify(all));
+}
+
+// ✅ run migration once on page load
+migrateEntriesAddIds();
+
+
+
+// ---------- IndexedDB helper (stores big blobs safely) ----------
+const DB_NAME = "DiaryDB";
+const DB_VERSION = 1;
+const STORE_MEDIA = "media";
+
+function openDiaryDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(STORE_MEDIA)) {
+        db.createObjectStore(STORE_MEDIA); // key -> blob
+      }
+    };
+
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function idbPutBlob(key, blob) {
+  const db = await openDiaryDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_MEDIA, "readwrite");
+    tx.objectStore(STORE_MEDIA).put(blob, key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function idbGetBlob(key) {
+  const db = await openDiaryDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_MEDIA, "readonly");
+    const req = tx.objectStore(STORE_MEDIA).get(key);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+
+// log in / sign up
+function openModal(id) {
+  document.getElementById(id).style.display = "block";
+}
+
+function closeModal(id) {
+  document.getElementById(id).style.display = "none";
+}
+
+function switchToSignup() {
+  closeModal("loginModal");
+  openModal("signupModal");
+}
+
+function switchToLogin() {
+  closeModal("signupModal");
+  openModal("loginModal");
+}
+
+// Close modal when clicking outside
+window.onclick = function (event) {
+  if (event.target.classList.contains("modal")) {
+    event.target.style.display = "none";
+  }
+};
+
+
+
+// --------------------
+// Calendar (Month View)
+// --------------------
+const calMonthLabel = document.getElementById("calMonthLabel");
+const calDays = document.getElementById("calDays");
+const prevMonthBtn = document.getElementById("prevMonthBtn");
+const nextMonthBtn = document.getElementById("nextMonthBtn");
+
+let viewDate = new Date();          // which month you are viewing
+let selectedDateStr = null;         // "YYYY-MM-DD"
+
+function pad2(n){ return String(n).padStart(2, "0"); }
+function toYMD(date){
+  return `${date.getFullYear()}-${pad2(date.getMonth()+1)}-${pad2(date.getDate())}`;
+}
+
+function renderCalendar(){
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth(); // 0-11
+
+  // Month label
+  const label = viewDate.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  calMonthLabel.textContent = label;
+
+  calDays.innerHTML = "";
+
+  // First day of month
+  const first = new Date(year, month, 1);
+  const firstWeekday = first.getDay(); // 0=Sun
+
+  // Days in month
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Days in previous month (for leading blanks)
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+  // Today's date string
+  const todayStr = toYMD(new Date());
+  
+  const datesWithEntries = getDatesWithEntries();
+
+  // Build 6 weeks x 7 days = 42 cells (standard month grid)
+  for (let i = 0; i < 42; i++) {
+    const cell = document.createElement("div");
+    cell.className = "day";
+
+    let dayNum;
+    let cellDate;
+
+    if (i < firstWeekday) {
+      // previous month
+      dayNum = (daysInPrevMonth - firstWeekday + 1) + i;
+      cell.classList.add("muted");
+      cellDate = new Date(year, month - 1, dayNum);
+
+    } else if (i >= firstWeekday + daysInMonth) {
+      // next month
+      dayNum = i - (firstWeekday + daysInMonth) + 1;
+      cell.classList.add("muted");
+      cellDate = new Date(year, month + 1, dayNum);
+
+    } else {
+      // current month
+      dayNum = i - firstWeekday + 1;
+      cellDate = new Date(year, month, dayNum);
+    }
+
+    const cellStr = toYMD(cellDate);
+    cell.textContent = dayNum;
+
+    if (cellStr === todayStr) cell.classList.add("today");
+    if (cellStr === selectedDateStr) cell.classList.add("selected");
+
+    // ✅ underline dates that have entries
+    if (datesWithEntries.has(cellStr)) cell.classList.add("has-entry");
+
+    cell.addEventListener("click", async () => {
+      selectedDateStr = cellStr;
+      renderCalendar();
+      await renderEntriesForDate(selectedDateStr);
+    });
+
+
+    calDays.appendChild(cell);
+  }
+}
+
+prevMonthBtn.addEventListener("click", () => {
+  viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1);
+  renderCalendar();
+});
+
+nextMonthBtn.addEventListener("click", () => {
+  viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1);
+  renderCalendar();
+});
+
+
+renderCalendar();
+
+const entriesList = document.getElementById("entriesList");
+const entriesDateLabel = document.getElementById("entriesDateLabel");
+
+/**
+ * Expected stored format (later, from your submit page):
+ * diaryEntries = [
+ *   { date: "2026-02-03", time: "09:12", text: "..." },
+ *   { date: "2026-02-03", time: "21:40", text: "..." }
+ * ]
+ */
+function getAllEntries() {
+  return JSON.parse(localStorage.getItem("diaryEntries")) || [];
+}
+
+function prettyLongDate(yyyyMmDd) {
+  const d = new Date(yyyyMmDd + "T00:00:00");
+  return d.toLocaleDateString(undefined, {
+    weekday: "long", day: "2-digit", month: "long", year: "numeric"
+  });
+}
+
+async function renderEntriesForDate(dateStr) {
+  // ✅ Guard: prevents "Invalid Date"
+  if (!dateStr) {
+    entriesDateLabel.textContent = "Select a date";
+    entriesList.innerHTML = `<div class="entries-empty">No entries yet.</div>`;
+    return;
+  }
+
+  // ✅ keep global selected date in sync
+  selectedDateStr = dateStr;
+
+  const all = getAllEntries();
+  const list = all.filter(e => e.date === dateStr);
+
+  entriesDateLabel.textContent = prettyLongDate(dateStr);
+
+  entriesList.innerHTML = "";
+
+  if (list.length === 0) {
+    entriesList.innerHTML = `<div class="entries-empty">No entries for this day.</div>`;
+    return;
+  }
+
+  // Sort by time if you want (optional)
+  list.sort((a, b) => (a.time || "").localeCompare(b.time || ""));
+
+  for (const e of list) {
+    const item = document.createElement("div");
+    item.className = "entry-item";
+
+    let contentHtml = "";
+
+    if (e.type === "write") {
+      contentHtml = `<div class="entry-text">${escapeHtml(e.text || "")}</div>`;
+
+    } else if (e.type === "speak") {
+      const blob = await idbGetBlob(e.mediaId);
+      if (!blob) {
+        contentHtml = `<div class="entry-text">(Audio missing)</div>`;
+      } else {
+        const url = URL.createObjectURL(blob);
+        contentHtml = `<audio controls style="width:100%;" src="${url}"></audio>`;
+      }
+
+    } else if (e.type === "record") {
+      const blob = await idbGetBlob(e.mediaId);
+      if (!blob) {
+        contentHtml = `<div class="entry-text">(Video missing)</div>`;
+      } else {
+        const url = URL.createObjectURL(blob);
+        contentHtml = `<video controls style="width:100%; border-radius:10px;" src="${url}"></video>`;
+      }
+
+    } else {
+      contentHtml = `<div class="entry-text">(Unknown entry type)</div>`;
+    }
+
+    item.innerHTML = `
+      <div class="entry-time">${e.time || "—"}</div>
+      ${contentHtml}
+      <div class="entry-actions">
+        <button class="delete-btn" data-id="${e.id}">Delete</button>
+      </div>
+    `;
+
+    entriesList.appendChild(item);
+
+    // ✅ Delete button: only store the id (date comes from selectedDateStr)
+    item.querySelector(".delete-btn").addEventListener("click", (ev) => {
+      ev.stopPropagation();
+
+      pendingDeleteId = e.id; // store entry id ONLY
+      document.getElementById("deleteModal").style.display = "block";
+    });
+  }
+}
+
+
+// Basic XSS-safe rendering (good habit)
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function getDatesWithEntries() {
+  const entries = getAllEntries();
+  return new Set(entries.map(e => e.date));
+}
+
+async function idbDeleteBlob(key) {
+  const db = await openDiaryDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_MEDIA, "readwrite");
+    tx.objectStore(STORE_MEDIA).delete(key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+
+function setAllEntries(entries) {
+  localStorage.setItem("diaryEntries", JSON.stringify(entries));
+}
+
+async function deleteEntryById(entryId) {
+  const all = getAllEntries();
+  const entry = all.find(x => x.id === entryId);
+  if (!entry) return;
+
+  // delete blob for media entries
+  if ((entry.type === "speak" || entry.type === "record") && entry.mediaId) {
+    await idbDeleteBlob(entry.mediaId);
+  }
+
+  // remove ONLY this entry from localStorage
+  const updated = all.filter(x => x.id !== entryId);
+  setAllEntries(updated);
+}
+
+
+function closeDeleteModal() {
+  document.getElementById("deleteModal").style.display = "none";
+  pendingDeleteId = null;
+  // ✅ do NOT clear the date
+}
+
+
+document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
+  if (!pendingDeleteId) return;
+
+  const dateToRefresh = selectedDateStr; // ✅ keep current selected date
+
+  await deleteEntryById(pendingDeleteId);
+
+  closeDeleteModal();
+
+  renderCalendar(); // update calendar highlight
+
+  // ✅ refresh entries for the SAME date
+  if (dateToRefresh) {
+    await renderEntriesForDate(dateToRefresh);
+  }
+});
+
+
+
+
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>W3.CSS Template</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+
+    <style>
+    /* fonts */
+    .hero-title {
+      font-family: "Press Start 2P", monospace;
+      font-size: 24px;
+      font-weight: 10;
+      color: #FFEA00;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: "Press Start 2P", monospace;
+      font-size: 10px;
+      font-weight: 10;
+      color: #818589;
+    }
+
+    .bgimg {
+      background-position: center;
+      background-size: cover;
+      background-image: url("https://i.pinimg.com/originals/99/cd/09/99cd0925c516b5d0a740dffd03c3e0df.gif");
+      min-height: 100%;
+    }
+
+    .input {
+      display: none;
+    }
+
+
+    /* about */
+
+    .about-title {
+      color: #6E260E;
+      font-size: 40px;
+    }
+
+    .about-content p {
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+
+    .nav-shell {
+      display: flex;
+      justify-content: space-between; /* left group vs right group */
+      align-items: center;
+      padding: 8px 16px;
+    }
+
+    /* Left group stays left */
+    .nav-left {
+      display: flex;
+      gap: 100px;              /* equal spacing between HOME/ABOUT/DIARY */
+      align-items: center;
+      color: #36454F;
+    }
+
+    /* Right group stays right */
+    .nav-right {
+      display: flex;
+      gap: 12px;              /* spacing between LOG IN / SIGN UP */
+      align-items: center;
+      color: #36454F;
+    }
+
+
+    /* Modal background */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    /* Modal box */
+    .modal-content {
+      background: #f6f4ef;
+      width: 90%;
+      max-width: 400px;
+      margin: 10% auto;
+      padding: 32px;
+      border-radius: 8px;
+      position: relative;
+      text-align: center;
+    }
+
+    /* --- LOGIN / SIGN UP MODAL TYPOGRAPHY --- */
+    .modal-content {
+      font-family: "Press Start 2P", monospace;
+      font-size: 10px;          /* smaller + readable */
+      line-height: 1.6;
+      color: #36454F;
+    }
+
+    /* Modal title */
+    .modal-content h2 {
+      font-family: "Press Start 2P", monospace;
+      font-size: 14px;
+      font-weight: normal;
+      margin-bottom: 20px;
+    }
+
+    /* Inputs */
+    .modal-content input {
+      font-family: "Press Start 2P", monospace;
+      font-size: 9px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    /* Login / Signup button */
+    .modal-content button {
+      font-family: "Press Start 2P", monospace;
+      font-size: 10px;
+      padding: 14px 0;
+    }
+
+    /* Switch text */
+    .modal-switch {
+      font-size: 9px;
+      line-height: 1.6;
+    }
+
+    .modal-switch span {
+      font-size: 9px;
+      font-weight: normal;
+    }
+
+
+    /* Close button */
+    .close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    /* Switch text */
+    .modal-switch {
+      margin-top: 16px;
+      font-size: 14px;
+    }
+
+    .modal-switch span {
+      color: #6F4E37;
+      cursor: pointer;
+      font-weight: 300;
+      font-size: 14px;
+    }
+
+
+    /* Left image */
+    .about-image {
+      background-image: url("https://i.pinimg.com/736x/ef/1e/63/ef1e635913352f3641fdbadfd2898bbb.jpg");
+      background-size: cover;
+      background-position: center;
+      min-height: 100vh;
+    }
+
+    /* Right side container */
+    .about-text {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;              /* vertical centering */
+      justify-content: center;
+      background-color: #f6f4ef;
+    }
+
+    /* Inner content with equal padding */
+    .about-content {
+      max-width: 500px;
+      padding: 40px;                    /* equal space on all sides */
+      color: #36454F;
+    }
+
+    /* Center the title horizontally */
+    .about-title {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .tablink {
+      font-family: "Press Start 2P", monospace;
+      font-size: 11px;          /* slightly smaller but cleaner */
+      line-height: 0.1;         /* KEY FIX: adds vertical space */
+      padding: 12px 0;          /* vertical breathing room */
+      letter-spacing: 1px;      /* pixel fonts love spacing */
+      color: #36454F;
+      cursor: pointer;
+    }
+
+
+    .modal-content,
+    .modal-content input,
+    .modal-content button {
+      letter-spacing: 0.3px;
+    }
+
+    .close {
+      font-size: 16px;
+      color: #36454F;
+    }
+
+    .modal-title {
+      font-family: "Press Start 2P", monospace;
+      font-size: 14px;      /* smaller & cleaner */
+      font-weight: normal;
+      color: #36454F;
+      margin-bottom: 24px;
+    }
+
+    .pixel-body {
+      font-family: "Press Start 2P", monospace;
+      font-size: 10px;          /* smaller = cleaner */
+      line-height: 1.9;         /* KEY: vertical breathing room */
+      letter-spacing: 0.8px;
+      color: #818589;
+    }
+
+    .pixel-body {
+      max-width: 520px;     /* prevents long lines */
+      margin: 0 auto 12px; /* centers nicely */
+      text-align: center;
+    }
+
+    .submit-bar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      margin-top: 16px;
+    }
+
+    /* Center the status */
+    .submit-status {
+      grid-column: 2;               /* middle column */
+      justify-self: center;
+      font-family: "Press Start 2P", monospace;
+      font-size: 12px;
+      color: #6F4E37;
+      opacity: 0.85;
+    }
+
+    /* Push button to the right */
+    .submit-bar button {
+      grid-column: 3;
+      justify-self: end;
+    }
+
+    .password-field{
+      position: relative;
+      margin-top: 12px;
+    }
+
+    .password-field input{
+      width: 100%;
+      padding-right: 15px; /* space for the single icon */
+    }
+
+    .eye-one{
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      stroke: #36454F;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.75;
+    }
+
+    .eye-one:hover{ opacity: 1; }
+
+    /* slash hidden by default */
+    .eye-one .slash{ display: none; }
+
+    /* when visible mode is ON, show slash */
+    .eye-one.is-on .slash{ display: block; }
+
+    
+
+    </style>
+  </head>
+<body>
+
+
+<div class="w3-top">
+  <div class="w3-sand nav-shell">
+
+    <!-- Left links -->
+    <div class="nav-left">
+      <a href="#" class="w3-bar-item w3-button">HOME</a>
+      <a href="#about" class="w3-bar-item w3-button">ABOUT</a>
+      <a href="diary.html" class="w3-bar-item w3-button">DIARY</a>
+      <a href="settings.html" class="w3-bar-item w3-button">SETTINGS</a>
+    </div>
+
+    <!-- Right buttons -->
+    <div class="nav-right">
+      <a href="javascript:void(0)" class="w3-bar-item w3-button w3-border w3-round"
+        onclick="openModal('loginModal')">LOG IN</a>
+
+      <a href="javascript:void(0)" class="w3-bar-item w3-button w3-border w3-round"
+        onclick="openModal('signupModal')">SIGN UP</a>
+    </div>
+
+
+  </div>
+</div>
+
+
+
+
+<!-- Header with image -->
+<header class="bgimg w3-display-container w3-grayscale-min" id="home">
+
+  <div class="w3-display-middle w3-center" style="width:90%; max-width:700px;">
+
+    <span id="homePrompt" class="hero-title" style="font-size: 30px; display:block; margin-bottom:24px;">
+      How was your day?<br>
+    </span>
+
+
+    <!-- INPUT CONTAINER -->
+    <div class="w3-card w3-padding w3-sand">
+
+      <div class="w3-row w3-center w3-padding">
+
+        <a href="javascript:void(0)" onclick="openinput(event, 'Write');" id="myLink">
+          <div class="w3-col s4 tablink">Write</div>
+        </a>
+        <a href="javascript:void(0)" onclick="openinput(event, 'Speak');">
+          <div class="w3-col s4 tablink">Speak</div>
+        </a>
+        <a href="javascript:void(0)" onclick="openinput(event, 'Record');">
+          <div class="w3-col s4 tablink">Record</div>
+        </a>
+
+      </div>
+
+      <div id="Write" class="w3-container input w3-padding-16">
+        <textarea
+        id="writeInput"
+        class="w3-input w3-border"
+        placeholder="Start typing..."
+        style="height:150px; resize:none"
+        ></textarea>
+
+        <div class="submit-bar">
+          <span id="writeStatus" class="submit-status"></span>
+
+          <button id="submitWrite" type="button"
+                  class="w3-button w3-dark-grey w3-round">
+            Submit
+          </button>
+        </div>
+
+
+
+      </div>
+
+      <div id="Speak" class="w3-container input w3-padding-16">
+
+        <p class="pixel-body" style="margin-top:0;">Record a voice note.</p>
+
+        <div class="w3-bar">
+          <button id="startRecBtn" class="w3-button w3-dark-grey w3-round">Start</button>
+          <button id="pauseRecBtn" class="w3-button w3-light-grey w3-round" disabled>Pause</button>
+          <button id="resumeRecBtn" class="w3-button w3-light-grey w3-round" disabled>Resume</button>
+          <button id="stopRecBtn" class="w3-button w3-black w3-round" disabled>Stop</button>
+        </div>
+
+        <p id="recStatus" class="w3-small w3-text-grey" style="margin-top:12px;">Not recording</p>
+
+        <audio id="playback" controls style="width:100%; display:none; margin-top:12px;"></audio>
+
+        <!-- Button row -->
+        <div style="display:flex; justify-content:flex-end; margin-top:12px;">
+          <button id="submitSpeak" type="button" class="w3-button w3-dark-grey w3-round">Submit</button>
+        </div>
+
+      </div>
+
+      <div id="Record" class="w3-container input w3-padding-16">
+        <p class="pixel-body" style="margin-top:0;">Record a video note.<br> 
+          (Video starts immediately after pressing "Start".)
+          </p>
+
+        <!-- Live camera preview -->
+        <video id="videoPreview" autoplay playsinline muted
+              style="width:100%; border-radius:8px; display:none;"></video>
+
+        <!-- Playback of recorded video -->
+        <video id="videoPlayback" controls
+              style="width:100%; border-radius:8px; display:none; margin-top:12px;"></video>
+
+        <div class="w3-bar" style="margin-top:12px;">
+          <button id="startVidBtn" class="w3-button w3-dark-grey w3-round">Start</button>
+          <button id="pauseVidBtn" class="w3-button w3-light-grey w3-round" disabled>Pause</button>
+          <button id="resumeVidBtn" class="w3-button w3-light-grey w3-round" disabled>Resume</button>
+          <button id="stopVidBtn" class="w3-button w3-black w3-round" disabled>Stop</button>
+        </div>
+
+        <p id="vidStatus" class="w3-small w3-text-grey" style="margin-top:12px;">Not recording</p>
+        
+        <!-- Button row -->
+        <div style="display:flex; justify-content:flex-end; margin-top:12px;">
+          <button id="submitRecord" type="button" class="w3-button w3-dark-grey w3-round">Submit</button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+<!-- Add a background color and large text to the whole page -->
+<div class="w3-sand w3-large">
+
+
+<!-- About Section -->
+<div class="w3-row" id="about" style="min-height:100vh;">
+
+  <!-- Left: Image -->
+  <div class="w3-col m6 w3-hide-small about-image"></div>
+
+  <!-- Right: Text -->
+  <div class="w3-col m6 about-text">
+    <div class="about-content">
+
+      <h1 class="hero-title about-title">About</h1>
+
+      <p class="w3-large">
+        We created Mineshare to give students a space to share their feelings. 
+        Go on that self-improvement journey!
+      </p>
+
+      <p class="w3-text-grey">
+        Life can be daunting. Start writing today.⋆˚꩜｡
+      </p>
+
+    </div>
+  </div>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('loginModal')">&times;</span>
+
+    <h2 class="modal-title">Log In</h2>
+
+    <!-- IMPORTANT: ID must match backend -->
+    <input id="loginEmail"
+           class="w3-input w3-border"
+           type="email"
+           placeholder="Email" />
+
+    <div class="password-field">
+      <!-- IMPORTANT: ID must match backend -->
+      <input id="loginPassword"
+             class="w3-input w3-border"
+             type="password"
+             placeholder="Password" />
+    </div>
+
+    <!-- IMPORTANT: must call handleLogin() -->
+    <button class="w3-button w3-dark-grey w3-margin-top w3-block"
+            onclick="handleLogin()">
+      Log In
+    </button>
+
+    <p class="modal-switch">
+      Don’t have an account?
+      <span onclick="switchToSignup()">Sign up here</span>
+    </p>
+  </div>
+</div>
+
+
+
+
+<!-- SIGN UP MODAL -->
+<div id="signupModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('signupModal')">&times;</span>
+
+    <h2 class="modal-title">Sign Up</h2>
+
+    <input id="signupEmail" 
+          class="w3-input w3-border" 
+          type="email" 
+          placeholder="Email"/>
+
+    <input class="w3-input w3-border" type="text" placeholder="Name">
+    <input class="w3-input w3-border" type="email" placeholder="Email" style="margin-top:12px;">
+
+    <div class="password-field">
+      <input id="signupPassword" 
+            class="w3-input w3-border" 
+            type="password" 
+            placeholder="Password" />
+
+    </div>
+
+    <button class="w3-button w3-dark-grey w3-margin-top w3-block"
+            onclick="handleSignup()">
+      Create Account
+    </button>
+
+    <p class="modal-switch">
+      Already have an account?
+      <span onclick="switchToLogin()">Log in here</span>
+    </p>
+  </div>
+</div>
+
+
+<div id="loggedOutUI" style="display:flex; gap:12px;">
+  <a href="javascript:void(0)" class="w3-bar-item w3-button w3-border w3-round" onclick="openModal('loginModal')">LOG IN</a>
+  <a href="javascript:void(0)" class="w3-bar-item w3-button w3-border w3-round" onclick="openModal('signupModal')">SIGN UP</a>
+</div>
+
+<div id="loggedInUI" style="display:none; gap:12px; align-items:center;">
+  <img id="userIcon" src="" alt="user" style="width:28px; height:28px; border-radius:50%; display:none;">
+  <span id="userNameDisplay"></span>
+  <button class="w3-button w3-border w3-round" onclick="handleLogout()">LOG OUT</button>
+</div>
+
+</div>
+
+
+
+
+<!-- End page content -->
+</div>
+
+<script type="module" src="./main.js"></script>
+
+
+<script>
+// ---------- UI: tabs ----------
+function openinput(evt, inputName) {
+  const panels = document.getElementsByClassName("input");
+  for (let i = 0; i < panels.length; i++) panels[i].style.display = "none";
+
+  const tabs = document.getElementsByClassName("tablink");
+  for (let i = 0; i < tabs.length; i++) tabs[i].className = tabs[i].className.replace(" w3-dark-grey", "");
+
+  document.getElementById(inputName).style.display = "block";
+  evt.currentTarget.firstElementChild.className += " w3-dark-grey";
+}
+document.getElementById("myLink").click();
+
+// ---------- UI: modals ----------
+function openModal(id) { document.getElementById(id).style.display = "block"; }
+function closeModal(id) { document.getElementById(id).style.display = "none"; }
+function switchToSignup() { closeModal("loginModal"); openModal("signupModal"); }
+function switchToLogin() { closeModal("signupModal"); openModal("loginModal"); }
+
+window.onclick = function (event) {
+  if (event.target.classList.contains("modal")) event.target.style.display = "none";
+};
+
+// ---------- localStorage helpers ----------
+function pad2(n) { return String(n).padStart(2, "0"); }
+function toYMD(date) { return `${date.getFullYear()}-${pad2(date.getMonth()+1)}-${pad2(date.getDate())}`; }
+function toHM(date) { return `${pad2(date.getHours())}:${pad2(date.getMinutes())}`; }
+
+function getDiaryEntries() {
+  return JSON.parse(localStorage.getItem("diaryEntries")) || [];
+}
+function saveDiaryEntry(entry) {
+  const all = getDiaryEntries();
+  all.push(entry);
+  localStorage.setItem("diaryEntries", JSON.stringify(all));
+}
+
+// ---------- IndexedDB (store blobs) ----------
+const DB_NAME = "DiaryDB";
+const DB_VERSION = 1;
+const STORE_MEDIA = "media";
+
+function openDiaryDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(STORE_MEDIA)) db.createObjectStore(STORE_MEDIA);
+    };
+
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function idbPutBlob(key, blob) {
+  const db = await openDiaryDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_MEDIA, "readwrite");
+    tx.objectStore(STORE_MEDIA).put(blob, key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function makeId() {
+  return (crypto.randomUUID ? crypto.randomUUID() : ("id_" + Date.now() + "_" + Math.random().toString(16).slice(2)));
+}
+
+// ---------- WRITE ----------
+document.getElementById("submitWrite").addEventListener("click", () => {
+  const writeInput = document.getElementById("writeInput");
+  const status = document.getElementById("writeStatus");
+
+  const text = (writeInput.value || "").trim();
+  if (!text) return;
+
+  const now = new Date();
+  saveDiaryEntry({
+    date: toYMD(now),
+    time: toHM(now),
+    type: "write",
+    text
+  });
+
+  writeInput.value = "";
+  status.textContent = "Submitted!";
+
+  setTimeout(() => {
+    status.textContent = "";
+  }, 2000);
+
+});
+
+
+// ---------- SPEAK: recording ----------
+let mediaRecorder = null;
+let audioChunks = [];
+let stream = null;
+let audioBlob = null;
+
+const startBtn = document.getElementById("startRecBtn");
+const pauseBtn = document.getElementById("pauseRecBtn");
+const resumeBtn = document.getElementById("resumeRecBtn");
+const stopBtn = document.getElementById("stopRecBtn");
+const statusEl = document.getElementById("recStatus");
+const playback = document.getElementById("playback");
+
+function setStatus(text) { statusEl.textContent = text; }
+
+async function startRecording() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    audioChunks = [];
+    audioBlob = null;
+
+    mediaRecorder = new MediaRecorder(stream);
+
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) audioChunks.push(e.data);
+    };
+
+    mediaRecorder.onstart = () => {
+      setStatus("Recording...");
+      startBtn.disabled = true;
+      pauseBtn.disabled = false;
+      stopBtn.disabled = false;
+      resumeBtn.disabled = true;
+
+      playback.style.display = "none";
+      playback.src = "";
+    };
+
+    mediaRecorder.onpause = () => {
+      setStatus("Paused");
+      pauseBtn.disabled = true;
+      resumeBtn.disabled = false;
+    };
+
+    mediaRecorder.onresume = () => {
+      setStatus("Recording...");
+      pauseBtn.disabled = false;
+      resumeBtn.disabled = true;
+    };
+
+    mediaRecorder.onstop = () => {
+      setStatus("Saved (preview below)");
+
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      resumeBtn.disabled = true;
+      stopBtn.disabled = true;
+
+      if (stream) stream.getTracks().forEach(t => t.stop());
+
+      audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+      playback.src = URL.createObjectURL(audioBlob);
+      playback.style.display = "block";
+      playback.load();
+    };
+
+    mediaRecorder.start();
+  } catch (err) {
+    console.error(err);
+    setStatus("Microphone permission blocked or unavailable.");
+  }
+}
+
+function pauseRecording() {
+  if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.pause();
+}
+function resumeRecording() {
+  if (mediaRecorder && mediaRecorder.state === "paused") mediaRecorder.resume();
+}
+function stopRecording() {
+  if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) mediaRecorder.stop();
+}
+
+startBtn.addEventListener("click", startRecording);
+pauseBtn.addEventListener("click", pauseRecording);
+resumeBtn.addEventListener("click", resumeRecording);
+stopBtn.addEventListener("click", stopRecording);
+
+// ---------- SPEAK: submit ----------
+document.getElementById("submitSpeak").addEventListener("click", async () => {
+  if (!audioBlob) return;
+
+  const now = new Date();
+  const mediaId = makeId();
+  await idbPutBlob(mediaId, audioBlob);
+
+  saveDiaryEntry({ date: toYMD(now), time: toHM(now), type: "speak", mediaId });
+
+  // clear preview
+  playback.pause();
+  if (playback.src) URL.revokeObjectURL(playback.src);
+  playback.removeAttribute("src");
+  playback.load();
+  playback.style.display = "none";
+
+  audioBlob = null;
+  setStatus("Submitted!");
+
+  status.textContent = "Submitted!";
+  setTimeout(() => {
+    status.textContent = "";
+  }, 2000);
+
+});
+
+// ---------- RECORD: video recording ----------
+let videoRecorder = null;
+let videoChunks = [];
+let videoStream = null;
+let videoBlob = null;
+
+const startVidBtn = document.getElementById("startVidBtn");
+const pauseVidBtn = document.getElementById("pauseVidBtn");
+const resumeVidBtn = document.getElementById("resumeVidBtn");
+const stopVidBtn = document.getElementById("stopVidBtn");
+const vidStatus = document.getElementById("vidStatus");
+const videoPreview = document.getElementById("videoPreview");
+const videoPlayback = document.getElementById("videoPlayback");
+
+function setVidStatus(text) { vidStatus.textContent = text; }
+
+async function startVideoRecording() {
+  try {
+    videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    videoChunks = [];
+    videoBlob = null;
+
+    videoPreview.srcObject = videoStream;
+    videoPreview.style.display = "block";
+    videoPlayback.style.display = "none";
+    videoPlayback.src = "";
+
+    let options = {};
+    if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")) options.mimeType = "video/webm;codecs=vp9,opus";
+    else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp8,opus")) options.mimeType = "video/webm;codecs=vp8,opus";
+    else if (MediaRecorder.isTypeSupported("video/webm")) options.mimeType = "video/webm";
+
+    videoRecorder = new MediaRecorder(videoStream, options);
+
+    videoRecorder.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) videoChunks.push(e.data);
+    };
+
+    videoRecorder.onstart = () => {
+      setVidStatus("Recording...");
+      startVidBtn.disabled = true;
+      pauseVidBtn.disabled = false;
+      resumeVidBtn.disabled = true;
+      stopVidBtn.disabled = false;
+    };
+
+    videoRecorder.onpause = () => {
+      setVidStatus("Paused");
+      pauseVidBtn.disabled = true;
+      resumeVidBtn.disabled = false;
+    };
+
+    videoRecorder.onresume = () => {
+      setVidStatus("Recording...");
+      pauseVidBtn.disabled = false;
+      resumeVidBtn.disabled = true;
+    };
+
+    videoRecorder.onstop = () => {
+      setVidStatus("Saved (preview below)");
+
+      startVidBtn.disabled = false;
+      pauseVidBtn.disabled = true;
+      resumeVidBtn.disabled = true;
+      stopVidBtn.disabled = true;
+
+      if (videoStream) videoStream.getTracks().forEach(t => t.stop());
+
+      videoPreview.srcObject = null;
+      videoPreview.style.display = "none";
+
+      videoBlob = new Blob(videoChunks, { type: videoRecorder.mimeType || "video/webm" });
+      videoPlayback.src = URL.createObjectURL(videoBlob);
+      videoPlayback.style.display = "block";
+      videoPlayback.load();
+    };
+
+    videoRecorder.start();
+  } catch (err) {
+    console.error(err);
+    setVidStatus("Camera/mic permission blocked or unavailable.");
+  }
+}
+
+function pauseVideoRecording() {
+  if (videoRecorder && videoRecorder.state === "recording") videoRecorder.pause();
+}
+function resumeVideoRecording() {
+  if (videoRecorder && videoRecorder.state === "paused") videoRecorder.resume();
+}
+function stopVideoRecording() {
+  if (videoRecorder && (videoRecorder.state === "recording" || videoRecorder.state === "paused")) videoRecorder.stop();
+}
+
+startVidBtn.addEventListener("click", startVideoRecording);
+pauseVidBtn.addEventListener("click", pauseVideoRecording);
+resumeVidBtn.addEventListener("click", resumeVideoRecording);
+stopVidBtn.addEventListener("click", stopVideoRecording);
+
+// ---------- RECORD: submit ----------
+document.getElementById("submitRecord").addEventListener("click", async () => {
+  if (!videoBlob) return;
+
+  const now = new Date();
+  const mediaId = makeId();
+  await idbPutBlob(mediaId, videoBlob);
+
+  saveDiaryEntry({ date: toYMD(now), time: toHM(now), type: "record", mediaId });
+
+  videoPlayback.pause();
+  if (videoPlayback.src) URL.revokeObjectURL(videoPlayback.src);
+  videoPlayback.removeAttribute("src");
+  videoPlayback.load();
+  videoPlayback.style.display = "none";
+
+  videoBlob = null;
+  setVidStatus("Submitted!");
+
+  status.textContent = "Submitted!";
+  setTimeout(() => {
+    status.textContent = "";
+  }, 2000);
+
+});
+
+function msUntilNext(hour, minute=0) {
+  const now = new Date();
+  const next = new Date(now);
+  next.setHours(hour, minute, 0, 0);
+  if (next <= now) next.setDate(next.getDate() + 1);
+  return next - now;
+}
+
+async function ensurePermission() {
+  if (!("Notification" in window)) return false;
+  if (Notification.permission === "granted") return true;
+  if (Notification.permission === "denied") return false;
+  const p = await Notification.requestPermission();
+  return p === "granted";
+}
+
+function scheduleDailyAt(hour, minute, title, body) {
+  const scheduleOnce = () => {
+    setTimeout(() => {
+      new Notification(title, { body });
+      scheduleOnce(); // schedule next day
+    }, msUntilNext(hour, minute));
+  };
+  scheduleOnce();
+}
+
+// Call this after a user click (e.g., “Enable reminders” button)
+async function startInPageReminders() {
+  const ok = await ensurePermission();
+  if (!ok) return;
+
+  scheduleDailyAt(9, 0, "Morning check-in", "How are you feeling today?");
+  scheduleDailyAt(21, 0, "Night reflection", "Want to write a quick diary entry?");
+}
+
+const savedBg = localStorage.getItem("indexBg");
+if (savedBg) {
+  document.querySelector(".bgimg").style.backgroundImage = `url('${savedBg}')`;
+}
+
+const PROMPTS_KEY = "customPrompts";
+const DEFAULT_PROMPT = "How was your day?";
+
+function pickRandom(arr){
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function applyRandomPrompt(){
+  const el = document.getElementById("homePrompt");
+  if (!el) return;
+
+  let prompts = null;
+  try {
+    prompts = JSON.parse(localStorage.getItem(PROMPTS_KEY) || "null");
+  } catch (e) {}
+
+  const list = (Array.isArray(prompts) && prompts.length) ? prompts : [DEFAULT_PROMPT];
+  const chosen = pickRandom(list);
+
+  // keep your <br> if you want:
+  el.innerHTML = `${chosen}<br>`;
+}
+
+applyRandomPrompt();
+
+document.querySelectorAll(".eye-one").forEach(icon => {
+  icon.addEventListener("click", () => {
+    const inputId = icon.getAttribute("data-target");
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    const isHidden = input.type === "password";
+    input.type = isHidden ? "text" : "password";
+
+    // toggle slash display (optional)
+    icon.classList.toggle("is-on", isHidden);
+  });
+});
+
+
+
+</script>
+
+
+
+</body>
+</html>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <title>W3.CSS Template</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,7 +48,7 @@
     }
 
     .about-content p {
-      font-size: 17px;
+      font-size: 21px;
       line-height: 1.75;
     }
 
@@ -77,6 +78,19 @@
       gap: 12px;              /* spacing between LOG IN / SIGN UP */
       align-items: center;
       color: #36454F;
+    }
+
+    .profile-icon {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      border: 2px solid #36454F;
+      background-color: #fff;
+      object-fit: cover;
+    }
+
+    .profile-icon-container:hover .profile-icon {
+      border-color: #6F4E37; /* Changes color on hover */
     }
 
 
@@ -267,41 +281,7 @@
       justify-self: end;
     }
 
-    .password-field{
-      position: relative;
-      margin-top: 12px;
-    }
 
-    .password-field input{
-      width: 100%;
-      padding-right: 15px; /* space for the single icon */
-    }
-
-    .eye-one{
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      stroke: #36454F;
-      fill: none;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      opacity: 0.75;
-    }
-
-    .eye-one:hover{ opacity: 1; }
-
-    /* slash hidden by default */
-    .eye-one .slash{ display: none; }
-
-    /* when visible mode is ON, show slash */
-    .eye-one.is-on .slash{ display: block; }
-
-    
 
     </style>
   </head>
@@ -321,12 +301,19 @@
 
     <!-- Right buttons -->
     <div class="nav-right">
-      <a href="javascript:void(0)" class="w3-bar-item w3-button w3-border w3-round"
-        onclick="openModal('loginModal')">LOG IN</a>
+  <div id="loggedOutUI" style="display: flex; gap: 12px;">
+    <a href="javascript:void(0)" class="w3-bar-item w3-button w3-border w3-round" onclick="openModal('loginModal')">LOG IN</a>
+    <a href="javascript:void(0)" class="w3-bar-item w3-button w3-border w3-round" onclick="openModal('signupModal')">SIGN UP</a>
+  </div>
 
-      <a href="javascript:void(0)" class="w3-bar-item w3-button w3-border w3-round"
-        onclick="openModal('signupModal')">SIGN UP</a>
+  <div id="loggedInUI" style="display: none; align-items: center; gap: 15px;">
+    <span id="userNameDisplay" style="color: #36454F; font-size: 10px;"></span>
+    <div class="profile-icon-container" onclick="location.href='settings.html'" style="cursor: pointer;">
+      <img id="userIcon" src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Felix" alt="Avatar" class="profile-icon">
     </div>
+    <a href="javascript:void(0)" onclick="handleLogout()" class="w3-button w3-tiny w3-border w3-round">LOGOUT</a>
+  </div>
+</div>
 
 
   </div>
@@ -340,10 +327,9 @@
 
   <div class="w3-display-middle w3-center" style="width:90%; max-width:700px;">
 
-    <span id="homePrompt" class="hero-title" style="font-size: 30px; display:block; margin-bottom:24px;">
+    <span id="dailyPrompt" class="hero-title" style="font-size: 40px; display:block; margin-bottom:24px;">
       How was your day?<br>
     </span>
-
 
     <!-- INPUT CONTAINER -->
     <div class="w3-card w3-padding w3-sand">
@@ -458,74 +444,46 @@
       <h1 class="hero-title about-title">About</h1>
 
       <p class="w3-large">
-        We created MindTrack to give students a space to share their feelings. 
-        Go on that self-improvement journey!
+        We created this website to give students a space to share their feelings. 
+        Go on your self-improvement journey by looking through your reviews.
       </p>
 
       <p class="w3-text-grey">
-        Life can be daunting. Start writing today.⋆˚꩜｡
+        Life can be daunting. Start writing today.
       </p>
 
     </div>
   </div>
 
-<!-- LOGIN MODAL -->
 <div id="loginModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('loginModal')">&times;</span>
-
     <h2 class="modal-title">Log In</h2>
 
-    <!-- IMPORTANT: ID must match backend -->
-    <input id="loginEmail"
-           class="w3-input w3-border"
-           type="email"
-           placeholder="Email" />
+    <input id="loginEmail" class="w3-input w3-border" type="email" placeholder="Email">
+    <input id="loginPassword" class="w3-input w3-border" type="password" placeholder="Password" style="margin-top:12px;">
 
-    <div class="password-field">
-      <!-- IMPORTANT: ID must match backend -->
-      <input id="loginPassword"
-             class="w3-input w3-border"
-             type="password"
-             placeholder="Password" />
-    </div>
-
-    <!-- IMPORTANT: must call handleLogin() -->
-    <button class="w3-button w3-dark-grey w3-margin-top w3-block"
-            onclick="handleLogin()">
+    <button onclick="handleLogin()" class="w3-button w3-dark-grey w3-margin-top w3-block">
       Log In
     </button>
 
     <p class="modal-switch">
-      Don’t have an account?
+      Don't have an account?
       <span onclick="switchToSignup()">Sign up here</span>
     </p>
   </div>
 </div>
 
-
-
-
-<!-- SIGN UP MODAL -->
 <div id="signupModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('signupModal')">&times;</span>
-
     <h2 class="modal-title">Sign Up</h2>
 
-    <input class="w3-input w3-border" type="text" placeholder="Name">
-    <input class="w3-input w3-border" type="email" placeholder="Email" style="margin-top:12px;">
+    <input id="signupName" class="w3-input w3-border" type="text" placeholder="Name">
+    <input id="signupEmail" class="w3-input w3-border" type="email" placeholder="Email" style="margin-top:12px;">
+    <input id="signupPassword" class="w3-input w3-border" type="password" placeholder="Password" style="margin-top:12px;">
 
-    <div class="password-field">
-      <input id="signupPassword" 
-            class="w3-input w3-border" 
-            type="password" 
-            placeholder="Password" />
-
-    </div>
-
-    <button class="w3-button w3-dark-grey w3-margin-top w3-block"
-            onclick="handleSignup()">
+    <button onclick="handleSignup()" class="w3-button w3-dark-grey w3-margin-top w3-block">
       Create Account
     </button>
 
@@ -536,30 +494,227 @@
   </div>
 </div>
 
-
-<div id="loggedOutUI" style="display:flex; gap:12px;">
-  <a href="javascript:void(0)" class="w3-bar-item w3-button w3-border w3-round" onclick="openModal('loginModal')">LOG IN</a>
-  <a href="javascript:void(0)" class="w3-bar-item w3-button w3-border w3-round" onclick="openModal('signupModal')">SIGN UP</a>
-</div>
-
-<div id="loggedInUI" style="display:none; gap:12px; align-items:center;">
-  <img id="userIcon" src="" alt="user" style="width:28px; height:28px; border-radius:50%; display:none;">
-  <span id="userNameDisplay"></span>
-  <button class="w3-button w3-border w3-round" onclick="handleLogout()">LOG OUT</button>
-</div>
-
-</div>
-
-
-
-
 <!-- End page content -->
 </div>
 
-<script type="module" src="./main.js"></script>
+<script type="module">
+// Add this import at the top of your module script
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
+// --- 2. CONFIGURATION ---
+const firebaseConfig = { 
+    apiKey: "AIzaSyD9tMCOvupw_2RD46jWI0RMHpnHC9eLgME", // Your Firebase API Key
+    authDomain: "voicediary-ec3cf.firebaseapp.com",
+    projectId: "voicediary-ec3cf",
+    storageBucket: "voicediary-ec3cf.appspot.com",
+    messagingSenderId: "912058113496",
+    appId: "1:912058113496:web:921482baa733ad194726ad"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Initialize Gemini with the correct stable model
+const genAI = new GoogleGenerativeAI("AIzaSyCuNH6iGMgEqW1ZxmvMmhHmIxKCe3w9kwc"); // Your Gemini API Key
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+// --- 3. VOICE ANALYSIS FUNCTION (THE MISSING PIECE!) ---
+window.analyzeVoiceWithGemini = async (audioBlob) => {
+    try {
+        console.log("🎤 Starting Voice Analysis with Gemini...");
+        const reader = new FileReader();
+        
+        return new Promise((resolve, reject) => {
+            reader.readAsDataURL(audioBlob);
+            reader.onloadend = async () => {
+                const base64Data = reader.result.split(',')[1];
+
+                const prompt = `I am recording a voice diary entry. 
+                                Listen to my tone, pace, and emotion in the audio.
+                                Provide a concise, empathetic summary of how I am feeling.
+                                Start with "You seem..." or "You sound..."
+                                Keep it under 20 words and be supportive.`;
+
+                const result = await model.generateContent([
+                    {
+                        inlineData: {
+                            data: base64Data,
+                            mimeType: audioBlob.type
+                        }
+                    },
+                    { text: prompt }
+                ]);
+
+                const response = await result.response;
+                console.log("✅ Voice Analysis Complete");
+                resolve(response.text());
+            };
+            reader.onerror = (error) => {
+                console.error("File Reading Error:", error);
+                reject("Could not process audio file.");
+            };
+        });
+    } catch (error) {
+        console.error("Gemini API Error:", error);
+        return "I'm having trouble connecting to the AI right now, but your voice note is saved.";
+    }
+};
+
+// --- 4. MULTIMODAL AI FUNCTION (Video + Face) ---
+window.getMultimodalSummary = async (faceEmotions, audioBlob) => {
+    try {
+        console.log("🎥 Starting Multimodal Analysis...");
+        const reader = new FileReader();
+        
+        return new Promise((resolve, reject) => {
+            reader.readAsDataURL(audioBlob);
+            reader.onloadend = async () => {
+                const base64Data = reader.result.split(',')[1];
+
+                // Format facial data into a readable string
+                // e.g., "happy: 80%, sad: 2%..."
+                const faceString = Object.entries(faceEmotions)
+                    .map(([emotion, val]) => `${emotion}: ${val}%`)
+                    .join(", ");
+
+                const prompt = `I am recording a video diary. 
+                                During this recording, my facial expressions were: ${faceString}.
+                                Listen to the audio tone and combine it with these visual cues.
+                                Provide a concise, empathetic summary of how I am feeling right now. 
+                                Start with "You seem..."`;
+
+                const result = await model.generateContent([
+                    {
+                        inlineData: {
+                            data: base64Data,
+                            mimeType: audioBlob.type
+                        }
+                    },
+                    { text: prompt }
+                ]);
+
+                const response = await result.response;
+                console.log("✅ Gemini Analysis Complete");
+                resolve(response.text());
+            };
+            reader.onerror = (error) => {
+                console.error("File Reading Error:", error);
+                reject("Could not process audio file.");
+            };
+        });
+    } catch (error) {
+        console.error("Gemini API Error:", error);
+        return "I'm having trouble connecting to the AI right now, but your data is safe.";
+    }
+};
+
+// --- 5. FIRESTORE SAVE FUNCTIONS ---
+
+// Save Text Diary Entries
+window.saveWriteToFirestore = async (text) => {
+    const user = auth.currentUser;
+    if (!user) return console.error("No user logged in.");
+
+    try {
+        await addDoc(collection(db, "diary_entries"), {
+            userId: user.uid,
+            userName: user.displayName || user.email,
+            type: "write",
+            content: text,
+            timestamp: serverTimestamp() 
+        });
+        console.log("Written entry saved!");
+    } catch (e) { console.error("Error saving write:", e); }
+};
+
+// Save Multimodal Analysis (Voice + Face Result)
+window.saveAnalysisToFirestore = async (dataPayload) => {
+    const user = auth.currentUser;
+    if (!user) return console.error("No user logged in.");
+
+    try {
+        // We create a flexible object that can hold the summary string OR the full object
+        const docData = {
+            userId: user.uid,
+            userName: user.displayName || user.email,
+            timestamp: serverTimestamp(),
+            // Spread the dataPayload if it's an object (containing faceData, voiceSummary, etc.)
+            ...(typeof dataPayload === 'object' ? dataPayload : { analysis: dataPayload })
+        };
+
+        await addDoc(collection(db, "voice_analyses"), docData);
+        console.log("Analysis saved to Firestore!");
+    } catch (e) { console.error("Error saving analysis:", e); }
+};
+
+// --- 6. AUTHENTICATION LOGIC ---
+
+// Listen for login state changes
+onAuthStateChanged(auth, (user) => {
+    const loggedOutUI = document.getElementById('loggedOutUI');
+    const loggedInUI = document.getElementById('loggedInUI');
+    const nameDisplay = document.getElementById('userNameDisplay');
+    const userIcon = document.getElementById('userIcon');
+
+    if (user) {
+        if (loggedOutUI) loggedOutUI.style.display = 'none';
+        if (loggedInUI) loggedInUI.style.display = 'flex';
+        
+        // Update Name
+        if (nameDisplay) {
+            nameDisplay.textContent = user.displayName || user.email.split('@')[0].toUpperCase();
+        }
+        // Update Icon
+        if (userIcon && user.photoURL) {
+            userIcon.src = user.photoURL;
+        }
+    } else {
+        if (loggedOutUI) loggedOutUI.style.display = 'flex';
+        if (loggedInUI) loggedInUI.style.display = 'none';
+    }
+});
+
+// Global Auth Functions (attached to window for buttons)
+window.handleLogin = async () => {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    if (!email || !password) return alert("Please enter email and password");
+
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        alert("Welcome back!");
+        const modal = document.getElementById('loginModal');
+        if (modal) modal.style.display = 'none';
+    } catch (error) { alert("Login Error: " + error.message); }
+};
+
+window.handleSignup = async () => {
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    if (!email || !password) return alert("Please enter email and password");
+
+    try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        alert("Account created!");
+        const modal = document.getElementById('signupModal');
+        if (modal) modal.style.display = 'none';
+    } catch (error) { alert("Signup Error: " + error.message); }
+};
+
+window.handleLogout = () => {
+    signOut(auth)
+        .then(() => alert("Logged out!"))
+        .catch(e => console.error(e));
+};
+</script>
 
 <script>
+
 // ---------- UI: tabs ----------
 function openinput(evt, inputName) {
   const panels = document.getElementsByClassName("input");
@@ -630,31 +785,30 @@ function makeId() {
   return (crypto.randomUUID ? crypto.randomUUID() : ("id_" + Date.now() + "_" + Math.random().toString(16).slice(2)));
 }
 
-// ---------- WRITE ----------
-document.getElementById("submitWrite").addEventListener("click", () => {
+// ---------- WRITE: submit ----------
+document.getElementById("submitWrite").addEventListener("click", async () => {
   const writeInput = document.getElementById("writeInput");
   const status = document.getElementById("writeStatus");
-
   const text = (writeInput.value || "").trim();
   if (!text) return;
 
+  // Check if function exists
+  if (typeof window.saveWriteToFirestore === 'function') {
+      await window.saveWriteToFirestore(text);
+      status.textContent = "Saved to Cloud!";
+  } else {
+      status.textContent = "Error: Firebase not loaded";
+      console.error("saveWriteToFirestore is not defined");
+      return; 
+  }
+
+  // Local Storage backup
   const now = new Date();
-  saveDiaryEntry({
-    date: toYMD(now),
-    time: toHM(now),
-    type: "write",
-    text
-  });
-
+  saveDiaryEntry({ date: toYMD(now), time: toHM(now), type: "write", text });
+  
   writeInput.value = "";
-  status.textContent = "Submitted!";
-
-  setTimeout(() => {
-    status.textContent = "";
-  }, 2000);
-
+  setTimeout(() => { status.textContent = ""; }, 2000);
 });
-
 
 // ---------- SPEAK: recording ----------
 let mediaRecorder = null;
@@ -708,7 +862,7 @@ async function startRecording() {
     };
 
     mediaRecorder.onstop = () => {
-      setStatus("Saved (preview above)");
+      setStatus("Saved (preview below)");
 
       startBtn.disabled = false;
       pauseBtn.disabled = true;
@@ -745,165 +899,206 @@ pauseBtn.addEventListener("click", pauseRecording);
 resumeBtn.addEventListener("click", resumeRecording);
 stopBtn.addEventListener("click", stopRecording);
 
-// ---------- SPEAK: submit ----------
+// ---------- SPEAK: submit (NOW WITH REAL AI!) ----------
 document.getElementById("submitSpeak").addEventListener("click", async () => {
   if (!audioBlob) return;
+  const status = document.getElementById("recStatus");
+  status.textContent = "🤖 Gemini is analyzing your voice...";
 
+  // 1. Get Real AI Analysis
+  let analysisResult;
+  if (window.analyzeVoiceWithGemini) {
+      analysisResult = await window.analyzeVoiceWithGemini(audioBlob);
+  } else {
+      analysisResult = "Voice saved, but AI is still warming up.";
+  }
+
+  // 2. Save to Firestore (Cloud)
+  if (window.saveAnalysisToFirestore) {
+      await window.saveAnalysisToFirestore(analysisResult);
+  }
+
+  // 3. Local Storage backup (for your Diary page)
   const now = new Date();
   const mediaId = makeId();
   await idbPutBlob(mediaId, audioBlob);
-
-  saveDiaryEntry({ date: toYMD(now), time: toHM(now), type: "speak", mediaId });
-
-  // clear preview
+  
+  saveDiaryEntry({ 
+    date: toYMD(now), 
+    time: toHM(now), 
+    type: "speak", 
+    mediaId, 
+    analysis: analysisResult 
+  });
+  
+  // UI Reset
   playback.pause();
-  if (playback.src) URL.revokeObjectURL(playback.src);
-  playback.removeAttribute("src");
-  playback.load();
-  playback.style.display = "none";
-
   audioBlob = null;
-  setStatus("Submitted!");
-
-  status.textContent = "Submitted!";
-  setTimeout(() => {
-    status.textContent = "";
-  }, 2000);
-
+  status.textContent = `✅ AI: "${analysisResult}"`;
+  
+  setTimeout(() => { status.textContent = "Not recording"; }, 5000);
 });
 
-// ---------- RECORD: video recording ----------
+// --- FACE API & RECORDING VARIABLES ---
 let videoRecorder = null;
 let videoChunks = [];
 let videoStream = null;
 let videoBlob = null;
+let faceResults = []; 
+let faceModelLoaded = false;
 
-const startVidBtn = document.getElementById("startVidBtn");
-const pauseVidBtn = document.getElementById("pauseVidBtn");
-const resumeVidBtn = document.getElementById("resumeVidBtn");
-const stopVidBtn = document.getElementById("stopVidBtn");
+// --- ADD THIS MISSING FUNCTION ---
 const vidStatus = document.getElementById("vidStatus");
+function setVidStatus(text) { 
+    if (vidStatus) vidStatus.textContent = text; 
+}
+
+// Load Face API Models on Page Load
+window.addEventListener('load', async () => {
+    const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/model';
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
+    faceModelLoaded = true;
+    console.log("Face Models Loaded");
+});
+
+// --- HELPER: Calculate Average Emotion ---
+function calculateAverageEmotions(results) {
+    if (!results || results.length === 0) return { neutral: 100 };
+    
+    const totals = { happy: 0, sad: 0, angry: 0, surprised: 0, fearful: 0, disgusted: 0, neutral: 0 };
+    
+    results.forEach(r => {
+        Object.keys(totals).forEach(k => totals[k] += (r[k] || 0));
+    });
+
+    const count = results.length;
+    Object.keys(totals).forEach(k => {
+        totals[k] = Math.round((totals[k] / count) * 100);
+    });
+    
+    return totals;
+}
+
+// --- HELPER: Detection Loop ---
+async function trackEmotions() {
+    if (!videoRecorder || videoRecorder.state !== "recording") return;
+
+    // Detect faces
+    const videoEl = document.getElementById("videoPreview");
+    if (videoEl && !videoEl.paused && !videoEl.ended) {
+        const detection = await faceapi
+            .detectSingleFace(videoEl, new faceapi.TinyFaceDetectorOptions())
+            .withFaceExpressions();
+
+        if (detection) {
+            faceResults.push(detection.expressions);
+        }
+    }
+    
+    setTimeout(trackEmotions, 100); 
+}
+
+// ---------- START RECORDING (Modified) ----------
+const startVidBtn = document.getElementById("startVidBtn");
 const videoPreview = document.getElementById("videoPreview");
 const videoPlayback = document.getElementById("videoPlayback");
 
-function setVidStatus(text) { vidStatus.textContent = text; }
+document.getElementById("startVidBtn").addEventListener("click", async () => {
+    if (!faceModelLoaded) {
+        alert("Please wait a moment for AI models to load...");
+        return;
+    }
 
-async function startVideoRecording() {
-  try {
-    videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    videoChunks = [];
-    videoBlob = null;
+    try {
+        videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        videoPreview.srcObject = videoStream;
+        videoPreview.style.display = "block";
+        videoPlayback.style.display = "none";
 
-    videoPreview.srcObject = videoStream;
-    videoPreview.style.display = "block";
-    videoPlayback.style.display = "none";
-    videoPlayback.src = "";
+        videoRecorder = new MediaRecorder(videoStream);
+        videoChunks = [];
+        faceResults = []; 
 
-    let options = {};
-    if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")) options.mimeType = "video/webm;codecs=vp9,opus";
-    else if (MediaRecorder.isTypeSupported("video/webm;codecs=vp8,opus")) options.mimeType = "video/webm;codecs=vp8,opus";
-    else if (MediaRecorder.isTypeSupported("video/webm")) options.mimeType = "video/webm";
+        videoRecorder.ondataavailable = (e) => videoChunks.push(e.data);
+        
+        videoRecorder.onstart = () => {
+            setVidStatus("Recording... (AI is watching)");
+            document.getElementById("startVidBtn").disabled = true;
+            document.getElementById("stopVidBtn").disabled = false;
+            
+            trackEmotions();
+        };
 
-    videoRecorder = new MediaRecorder(videoStream, options);
+        videoRecorder.onstop = () => {
+            setVidStatus("Processing AI Summary...");
+            document.getElementById("startVidBtn").disabled = false;
+            document.getElementById("stopVidBtn").disabled = true;
+            
+            videoBlob = new Blob(videoChunks, { type: "video/webm" });
+            videoPreview.srcObject = null;
+            videoPreview.style.display = "none";
+            
+            videoPlayback.src = URL.createObjectURL(videoBlob);
+            videoPlayback.style.display = "block";
+            
+            videoStream.getTracks().forEach(t => t.stop());
+        };
 
-    videoRecorder.ondataavailable = (e) => {
-      if (e.data && e.data.size > 0) videoChunks.push(e.data);
-    };
+        videoRecorder.start();
 
-    videoRecorder.onstart = () => {
-      setVidStatus("Recording...");
-      startVidBtn.disabled = true;
-      pauseVidBtn.disabled = false;
-      resumeVidBtn.disabled = true;
-      stopVidBtn.disabled = false;
-    };
-
-    videoRecorder.onpause = () => {
-      setVidStatus("Paused");
-      pauseVidBtn.disabled = true;
-      resumeVidBtn.disabled = false;
-    };
-
-    videoRecorder.onresume = () => {
-      setVidStatus("Recording...");
-      pauseVidBtn.disabled = false;
-      resumeVidBtn.disabled = true;
-    };
-
-    videoRecorder.onstop = () => {
-      setVidStatus("Saved (preview below)");
-
-      startVidBtn.disabled = false;
-      pauseVidBtn.disabled = true;
-      resumeVidBtn.disabled = true;
-      stopVidBtn.disabled = true;
-
-      if (videoStream) videoStream.getTracks().forEach(t => t.stop());
-
-      videoPreview.srcObject = null;
-      videoPreview.style.display = "none";
-
-      videoBlob = new Blob(videoChunks, { type: videoRecorder.mimeType || "video/webm" });
-      videoPlayback.src = URL.createObjectURL(videoBlob);
-      videoPlayback.style.display = "block";
-      videoPlayback.load();
-    };
-
-    videoRecorder.start();
-  } catch (err) {
-    console.error(err);
-    setVidStatus("Camera/mic permission blocked or unavailable.");
-  }
-}
-
-function pauseVideoRecording() {
-  if (videoRecorder && videoRecorder.state === "recording") videoRecorder.pause();
-}
-function resumeVideoRecording() {
-  if (videoRecorder && videoRecorder.state === "paused") videoRecorder.resume();
-}
-function stopVideoRecording() {
-  if (videoRecorder && (videoRecorder.state === "recording" || videoRecorder.state === "paused")) videoRecorder.stop();
-}
-
-startVidBtn.addEventListener("click", startVideoRecording);
-pauseVidBtn.addEventListener("click", pauseVideoRecording);
-resumeVidBtn.addEventListener("click", resumeVideoRecording);
-stopVidBtn.addEventListener("click", stopVideoRecording);
-
-// ---------- RECORD: submit ----------
-document.getElementById("submitRecord").addEventListener("click", async () => {
-  if (!videoBlob) return;
-
-  const now = new Date();
-  const mediaId = makeId();
-  await idbPutBlob(mediaId, videoBlob);
-
-  saveDiaryEntry({ date: toYMD(now), time: toHM(now), type: "record", mediaId });
-
-  videoPlayback.pause();
-  if (videoPlayback.src) URL.revokeObjectURL(videoPlayback.src);
-  videoPlayback.removeAttribute("src");
-  videoPlayback.load();
-  videoPlayback.style.display = "none";
-
-  videoBlob = null;
-  setVidStatus("Submitted!");
-
-  status.textContent = "Submitted!";
-  setTimeout(() => {
-    status.textContent = "";
-  }, 2000);
-
+    } catch (err) {
+        console.error(err);
+        setVidStatus("Camera Error");
+    }
 });
 
-function msUntilNext(hour, minute=0) {
-  const now = new Date();
-  const next = new Date(now);
-  next.setHours(hour, minute, 0, 0);
-  if (next <= now) next.setDate(next.getDate() + 1);
-  return next - now;
-}
+document.getElementById("stopVidBtn").addEventListener("click", () => {
+    if (videoRecorder) videoRecorder.stop();
+});
+
+// ---------- RECORD: SUBMIT (The Big Change) ----------
+document.getElementById("submitRecord").addEventListener("click", async () => {
+    if (!videoBlob) return;
+    const status = document.getElementById("vidStatus");
+    status.textContent = "🎥 Gemini is analyzing Video + Face data...";
+
+    // 1. Calculate the 'Average Face' from the recording
+    const avgFace = calculateAverageEmotions(faceResults);
+    console.log("Average Face Data:", avgFace);
+
+    // 2. Send Face Data + Audio to Gemini (defined in main.js)
+    let analysisResult;
+    if (window.getMultimodalSummary) {
+        analysisResult = await window.getMultimodalSummary(avgFace, videoBlob);
+    } else {
+        analysisResult = "AI functions not loaded.";
+    }
+
+    // 3. Save to Firestore with the full data object
+    if (window.saveAnalysisToFirestore) {
+        await window.saveAnalysisToFirestore({
+            analysis: analysisResult,
+            faceData: avgFace,
+            type: "video_entry"
+        });
+    }
+
+    const now = new Date();
+    const mediaId = makeId();
+    await idbPutBlob(mediaId, videoBlob);
+
+    saveDiaryEntry({ 
+        date: toYMD(now), 
+        time: toHM(now), 
+        type: "record", 
+        mediaId,
+        analysis: analysisResult 
+    });
+
+    status.textContent = "✅ Saved! " + analysisResult;
+    videoBlob = null;
+});
 
 async function ensurePermission() {
   if (!("Notification" in window)) return false;
@@ -917,13 +1112,12 @@ function scheduleDailyAt(hour, minute, title, body) {
   const scheduleOnce = () => {
     setTimeout(() => {
       new Notification(title, { body });
-      scheduleOnce(); // schedule next day
+      scheduleOnce(); 
     }, msUntilNext(hour, minute));
   };
   scheduleOnce();
 }
 
-// Call this after a user click (e.g., “Enable reminders” button)
 async function startInPageReminders() {
   const ok = await ensurePermission();
   if (!ok) return;
@@ -933,46 +1127,35 @@ async function startInPageReminders() {
 }
 
 
-const PROMPTS_KEY = "customPrompts";
-const DEFAULT_PROMPT = "How was your day?";
+// --- LOAD RANDOM PROMPT FROM SETTINGS ---
+window.addEventListener('DOMContentLoaded', () => {
+    const promptElement = document.getElementById("dailyPrompt");
+    if (!promptElement) return;
 
-function pickRandom(arr){
-  return arr[Math.floor(Math.random() * arr.length)];
-}
+    const PROMPTS_KEY = "customPrompts";
+    const DEFAULT_PROMPTS = [
+      "How was your day?",
+      "What’s on your mind right now?",
+      "What are you grateful for today?",
+      "What did you learn today?"
+    ];
 
-function applyRandomPrompt(){
-  const el = document.getElementById("homePrompt");
-  if (!el) return;
+    let prompts = [];
+    try {
+        const raw = localStorage.getItem(PROMPTS_KEY);
+        prompts = raw ? JSON.parse(raw) : DEFAULT_PROMPTS;
+    } catch (e) {
+        prompts = DEFAULT_PROMPTS;
+    }
 
-  let prompts = null;
-  try {
-    prompts = JSON.parse(localStorage.getItem(PROMPTS_KEY) || "null");
-  } catch (e) {}
+    if (!Array.isArray(prompts) || prompts.length === 0) {
+        prompts = DEFAULT_PROMPTS;
+    }
 
-  const list = (Array.isArray(prompts) && prompts.length) ? prompts : [DEFAULT_PROMPT];
-  const chosen = pickRandom(list);
+    const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
 
-  // keep your <br> if you want:
-  el.innerHTML = `${chosen}<br>`;
-}
-
-applyRandomPrompt();
-
-document.querySelectorAll(".eye-one").forEach(icon => {
-  icon.addEventListener("click", () => {
-    const inputId = icon.getAttribute("data-target");
-    const input = document.getElementById(inputId);
-    if (!input) return;
-
-    const isHidden = input.type === "password";
-    input.type = isHidden ? "text" : "password";
-
-    // toggle slash display (optional)
-    icon.classList.toggle("is-on", isHidden);
-  });
+    promptElement.textContent = randomPrompt;
 });
-
-
 
 </script>
 

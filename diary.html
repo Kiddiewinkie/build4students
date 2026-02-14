@@ -229,7 +229,7 @@
       padding: 18px;
       display: flex;
       flex-direction: column;
-      height: auto;   /* don’t stretch */
+      height: auto;   /* don't stretch */
     }
 
     .calendar-card,
@@ -283,7 +283,7 @@
     .entry-text {
       font-family: "Press Start 2P", monospace;
       font-size: 9px;
-      line-height: 1.6;   /* makes it less “squashed” */
+      line-height: 1.6;   /* makes it less "squashed" */
       color: #36454F;
     }
 
@@ -457,9 +457,133 @@
     </style>
   </head>
 
-
-
 <body>
+
+<script type="module">
+// ========================================
+// FIREBASE INITIALIZATION (THE FIX!)
+// ========================================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, query, where, orderBy, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = { 
+    apiKey: "AIzaSyD9tMCOvupw_2RD46jWI0RMHpnHC9eLgME",
+    authDomain: "voicediary-ec3cf.firebaseapp.com",
+    projectId: "voicediary-ec3cf",
+    storageBucket: "voicediary-ec3cf.appspot.com",
+    messagingSenderId: "912058113496",
+    appId: "1:912058113496:web:921482baa733ad194726ad"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Make these available globally for the rest of the script
+window.auth = auth;
+window.db = db;
+window.getDocs = getDocs;
+window.query = query;
+window.collection = collection;
+window.where = where;
+window.orderBy = orderBy;
+window.deleteDoc = deleteDoc;
+window.doc = doc;
+
+// ========================================
+// CLOUD ENTRIES LOADER (NEW!)
+// ========================================
+window.loadCloudEntries = async function() {
+    const user = auth.currentUser;
+    if (!user) {
+        console.log("❌ No user logged in - showing local entries only");
+        return [];
+    }
+
+    try {
+        console.log("☁️ Loading entries from Firestore...");
+        
+        // Get text entries
+        const textQuery = query(
+            collection(db, "diary_entries"),
+            where("userId", "==", user.uid),
+            orderBy("timestamp", "desc")
+        );
+        const textSnapshot = await getDocs(textQuery);
+        
+        // Get voice/video analyses
+        const analysisQuery = query(
+            collection(db, "voice_analyses"),
+            where("userId", "==", user.uid),
+            orderBy("timestamp", "desc")
+        );
+        const analysisSnapshot = await getDocs(analysisQuery);
+
+        // Convert to our local format
+        const cloudEntries = [];
+
+        textSnapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const date = data.timestamp?.toDate();
+            cloudEntries.push({
+                id: docSnap.id,
+                date: date ? toYMD(date) : null,
+                time: date ? toHM(date) : null,
+                type: "write",
+                text: data.content,
+                cloudId: docSnap.id
+            });
+        });
+
+        analysisSnapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const date = data.timestamp?.toDate();
+            cloudEntries.push({
+                id: docSnap.id,
+                date: date ? toYMD(date) : null,
+                time: date ? toHM(date) : null,
+                type: data.type || "speak",
+                analysis: data.analysis,
+                faceData: data.faceData,
+                cloudId: docSnap.id
+            });
+        });
+
+        console.log(`✅ Loaded ${cloudEntries.length} entries from cloud`);
+        return cloudEntries;
+
+    } catch (error) {
+        console.error("Error loading cloud entries:", error);
+        return [];
+    }
+};
+
+// Helper functions
+function toYMD(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function toHM(date) {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const mins = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${mins}`;
+}
+
+// Wait for auth, then load entries
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        console.log("✅ User logged in:", user.email);
+        await window.loadCloudEntriesAndRefresh();
+    } else {
+        console.log("❌ No user - showing local only");
+        renderCalendar();
+    }
+});
+</script>
 
 
 <div class="page-bg">
@@ -517,7 +641,7 @@
       </div>
     </div>
 
-    <!-- RIGHT: EMPTY (for future) -->
+    <!-- RIGHT: ENTRIES -->
     <div class="right-panel">
       <div class="entries-top-spacer"></div>
         <div class="entries-card">
@@ -556,7 +680,7 @@
     </button>
 
     <p class="modal-switch">
-      Don’t have an account?
+      Don't have an account?
       <span onclick="switchToSignup()">Sign up here</span>
     </p>
   </div>
@@ -612,6 +736,7 @@
 
 let pendingDeleteId = null;
 let pendingDeleteDate = null;
+let allEntriesCache = []; // Store cloud + local entries here
 
 
 function makeId() {
@@ -670,6 +795,9 @@ async function idbPutBlob(key, blob) {
 }
 
 async function idbGetBlob(key) {
+  // ✅ SAFETY CHECK: If the key is missing (undefined/null), stop immediately.
+  if (!key) return null;
+
   const db = await openDiaryDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_MEDIA, "readonly");
@@ -812,15 +940,37 @@ const entriesList = document.getElementById("entriesList");
 const entriesDateLabel = document.getElementById("entriesDateLabel");
 
 /**
- * Expected stored format (later, from your submit page):
- * diaryEntries = [
- *   { date: "2026-02-03", time: "09:12", text: "..." },
- *   { date: "2026-02-03", time: "21:40", text: "..." }
- * ]
+ * ========================================
+ * MODIFIED: Now pulls from CLOUD + LOCAL
+ * ========================================
  */
 function getAllEntries() {
-  return JSON.parse(localStorage.getItem("diaryEntries")) || [];
+  // Return cached entries (cloud + local merged)
+  return allEntriesCache;
 }
+
+// ========================================
+// NEW: Load cloud entries and merge with local
+// ========================================
+window.loadCloudEntriesAndRefresh = async function() {
+    const cloudEntries = await window.loadCloudEntries();
+    const localEntries = JSON.parse(localStorage.getItem("diaryEntries")) || [];
+    
+    // Merge (cloud takes priority if same ID)
+    const merged = [...cloudEntries];
+    
+    // Add local entries that don't have a cloudId
+    for (const local of localEntries) {
+        if (!local.cloudId) {
+            merged.push(local);
+        }
+    }
+    
+    allEntriesCache = merged;
+    console.log(`📚 Total entries (cloud + local): ${merged.length}`);
+    
+    renderCalendar();
+};
 
 function prettyLongDate(yyyyMmDd) {
   const d = new Date(yyyyMmDd + "T00:00:00");
@@ -844,7 +994,6 @@ async function renderEntriesForDate(dateStr) {
   const list = all.filter(e => e.date === dateStr);
 
   entriesDateLabel.textContent = prettyLongDate(dateStr);
-
   entriesList.innerHTML = "";
 
   if (list.length === 0) {
@@ -852,7 +1001,7 @@ async function renderEntriesForDate(dateStr) {
     return;
   }
 
-  // Sort by time if you want (optional)
+  // Sort by time
   list.sort((a, b) => (a.time || "").localeCompare(b.time || ""));
 
   for (const e of list) {
@@ -860,30 +1009,53 @@ async function renderEntriesForDate(dateStr) {
     item.className = "entry-item";
 
     let contentHtml = "";
+    
+    // Create the AI message display block if an analysis exists
+    const aiMessageHtml = e.analysis 
+        ? `<div class="entry-text" style="color: #6F4E37; font-style: italic; margin-top: 8px; border-top: 1px dashed #6F4E37; padding-top: 8px;">
+             ✨ AI Mood Analysis: "${escapeHtml(e.analysis)}"
+           </div>` 
+        : "";
 
     if (e.type === "write") {
-      contentHtml = `<div class="entry-text">${escapeHtml(e.text || "")}</div>`;
+        contentHtml = `<div class="entry-text">${escapeHtml(e.text || "")}</div>`;
 
     } else if (e.type === "speak") {
-      const blob = await idbGetBlob(e.mediaId);
-      if (!blob) {
-        contentHtml = `<div class="entry-text">(Audio missing)</div>`;
-      } else {
-        const url = URL.createObjectURL(blob);
-        contentHtml = `<audio controls style="width:100%;" src="${url}"></audio>`;
-      }
+        // ✅ FIX: Only look for blob if mediaId exists
+        const blob = e.mediaId ? await idbGetBlob(e.mediaId) : null;
+        
+        if (!blob) {
+            const msg = e.cloudId 
+               ? "(Audio saved in cloud ☁️)" 
+               : "(Audio missing ❌)";
+            contentHtml = `<div class="entry-text" style="opacity:0.7; font-size:8px;">${msg}</div>${aiMessageHtml}`;
+        } else {
+            const url = URL.createObjectURL(blob);
+            contentHtml = `
+                <audio controls style="width:100%;" src="${url}"></audio>
+                ${aiMessageHtml}
+            `;
+        }
 
-    } else if (e.type === "record") {
-      const blob = await idbGetBlob(e.mediaId);
-      if (!blob) {
-        contentHtml = `<div class="entry-text">(Video missing)</div>`;
-      } else {
-        const url = URL.createObjectURL(blob);
-        contentHtml = `<video controls style="width:100%; border-radius:10px;" src="${url}"></video>`;
-      }
+    } else if (e.type === "record" || e.type === "video_entry") {
+        // ✅ FIX: Only look for blob if mediaId exists
+        const blob = e.mediaId ? await idbGetBlob(e.mediaId) : null;
+        
+        if (!blob) {
+            const msg = e.cloudId 
+               ? "(Video saved in cloud ☁️)" 
+               : "(Video missing ❌)";
+            contentHtml = `<div class="entry-text" style="opacity:0.7; font-size:8px;">${msg}</div>${aiMessageHtml}`;
+        } else {
+            const url = URL.createObjectURL(blob);
+            contentHtml = `
+                <video controls style="width:100%; border-radius:10px;" src="${url}"></video>
+                ${aiMessageHtml}
+            `;
+        }
 
     } else {
-      contentHtml = `<div class="entry-text">(Unknown entry type)</div>`;
+        contentHtml = `<div class="entry-text">(Unknown entry type)</div>`;
     }
 
     item.innerHTML = `
@@ -896,16 +1068,14 @@ async function renderEntriesForDate(dateStr) {
 
     entriesList.appendChild(item);
 
-    // ✅ Delete button: only store the id (date comes from selectedDateStr)
+    // Delete button logic
     item.querySelector(".delete-btn").addEventListener("click", (ev) => {
       ev.stopPropagation();
-
-      pendingDeleteId = e.id; // store entry id ONLY
+      pendingDeleteId = e.id;
       document.getElementById("deleteModal").style.display = "block";
     });
   }
 }
-
 
 // Basic XSS-safe rendering (good habit)
 function escapeHtml(str) {
@@ -937,19 +1107,41 @@ function setAllEntries(entries) {
   localStorage.setItem("diaryEntries", JSON.stringify(entries));
 }
 
+// ========================================
+// MODIFIED: Delete from cloud too
+// ========================================
 async function deleteEntryById(entryId) {
   const all = getAllEntries();
   const entry = all.find(x => x.id === entryId);
   if (!entry) return;
+
+  // Delete from Firestore if it's a cloud entry
+  if (entry.cloudId && window.db) {
+      try {
+          if (entry.type === "write") {
+              await window.deleteDoc(window.doc(window.db, "diary_entries", entry.cloudId));
+              console.log("☁️ Deleted from cloud: diary_entries");
+          } else {
+              await window.deleteDoc(window.doc(window.db, "voice_analyses", entry.cloudId));
+              console.log("☁️ Deleted from cloud: voice_analyses");
+          }
+      } catch (error) {
+          console.error("Error deleting from cloud:", error);
+      }
+  }
 
   // delete blob for media entries
   if ((entry.type === "speak" || entry.type === "record") && entry.mediaId) {
     await idbDeleteBlob(entry.mediaId);
   }
 
-  // remove ONLY this entry from localStorage
-  const updated = all.filter(x => x.id !== entryId);
+  // remove from localStorage
+  const localEntries = JSON.parse(localStorage.getItem("diaryEntries")) || [];
+  const updated = localEntries.filter(x => x.id !== entryId);
   setAllEntries(updated);
+  
+  // remove from cache
+  allEntriesCache = allEntriesCache.filter(x => x.id !== entryId);
 }
 
 
@@ -976,10 +1168,6 @@ document.getElementById("confirmDeleteBtn").addEventListener("click", async () =
     await renderEntriesForDate(dateToRefresh);
   }
 });
-
-
-
-
 
 </script>
 

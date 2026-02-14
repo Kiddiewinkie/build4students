@@ -568,55 +568,66 @@
 
     // ===== TABS =====
     function openSettingsTab(which, el){
-      document.getElementById("tab-account").style.display = "none";
-      document.getElementById("tab-personal").style.display = "none";
+        // Hide all tabs
+        document.querySelectorAll(".tab-panel").forEach(div => div.style.display = "none");
+        
+        // Deactivate all links
+        document.querySelectorAll(".side-link").forEach(a => a.classList.remove("active"));
+        
+        // Activate clicked link
+        if (el) el.classList.add("active");
 
-      document.querySelectorAll(".side-link").forEach(a => a.classList.remove("active"));
-      el.classList.add("active");
-
-      if (which === "account") document.getElementById("tab-account").style.display = "block";
-      if (which === "personal") document.getElementById("tab-personal").style.display = "block";
-
-      document.querySelector(".settings-main").scrollTop = 0;
+        // Show specific tab
+        if (which === "account") document.getElementById("tab-account").style.display = "block";
+        if (which === "personal") document.getElementById("tab-personal").style.display = "block";
     }
 
+    // ===== NOTIFICATIONS =====
     const NOTIF_KEY = "notifEnabled";
-
-    function initNotifToggle(){
-      const toggle = document.getElementById("notifToggle");
-      const saved = localStorage.getItem(NOTIF_KEY);
-      toggle.checked = (saved === "true");
-
-      toggle.addEventListener("change", () => {
-        localStorage.setItem(NOTIF_KEY, String(toggle.checked));
-      });
+    const toggle = document.getElementById("notifToggle");
+    
+    if (toggle) {
+        toggle.checked = (localStorage.getItem(NOTIF_KEY) === "true");
+        toggle.addEventListener("change", () => {
+            localStorage.setItem(NOTIF_KEY, String(toggle.checked));
+        });
     }
 
-    initNotifToggle();
-
-    // ================================
-    // Personalisation: Custom prompts
-    // ================================
+    // ===== CUSTOM PROMPTS =====
     const PROMPTS_KEY = "customPrompts";
     const DEFAULT_PROMPTS = [
       "How was your day?",
       "What’s on your mind right now?",
       "What are you grateful for today?",
+      "What did you learn today?"
     ];
 
+    // Helper: Get list (or default)
     function getPrompts(){
       const raw = localStorage.getItem(PROMPTS_KEY);
+      if (!raw) return [...DEFAULT_PROMPTS];
       try {
-        const arr = raw ? JSON.parse(raw) : null;
-        if (Array.isArray(arr) && arr.length) return arr;
-      } catch (e) {}
-      return [...DEFAULT_PROMPTS];
+        const arr = JSON.parse(raw);
+        return (Array.isArray(arr) && arr.length > 0) ? arr : [...DEFAULT_PROMPTS];
+      } catch (e) {
+        return [...DEFAULT_PROMPTS];
+      }
     }
 
+    // Helper: Save list
     function savePrompts(list){
       localStorage.setItem(PROMPTS_KEY, JSON.stringify(list));
+      renderPromptList(); // re-render immediately
     }
 
+    // Helper: Escape HTML
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, function(m){
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;','\'':'&#039;'}[m];
+      });
+    }
+
+    // Render the list
     function renderPromptList(){
       const wrap = document.getElementById("promptList");
       if (!wrap) return;
@@ -624,90 +635,53 @@
       const prompts = getPrompts();
       wrap.innerHTML = "";
 
-      prompts.forEach((p, idx) => {
+      prompts.forEach((p, index) => {
         const row = document.createElement("div");
         row.className = "prompt-chip";
         row.innerHTML = `
           <div class="prompt-text">${escapeHtml(p)}</div>
-          <button class="prompt-del" type="button" data-i="${idx}">Remove</button>
+          <button class="prompt-del" onclick="deletePrompt(${index})">Remove</button>
         `;
         wrap.appendChild(row);
       });
+    }
 
-      wrap.querySelectorAll(".prompt-del").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const i = Number(btn.dataset.i);
-          const arr = getPrompts();
-          arr.splice(i, 1);
-          if (arr.length === 0) {
-            savePrompts([...DEFAULT_PROMPTS]); // never leave it empty
-          } else {
-            savePrompts(arr);
-          }
-          renderPromptList();
+    // Delete action (global function so onclick works)
+    window.deletePrompt = function(index) {
+        const list = getPrompts();
+        list.splice(index, 1);
+        savePrompts(list);
+    };
+
+    // Add action
+    const addBtn = document.getElementById("addPromptBtn");
+    const input = document.getElementById("promptInput");
+
+    if (addBtn && input) {
+        addBtn.addEventListener("click", () => {
+            const val = input.value.trim();
+            if (!val) return;
+
+            const list = getPrompts();
+            list.unshift(val); // add to top
+            savePrompts(list);
+            input.value = ""; // clear input
         });
-      });
     }
 
-    function initPromptControls(){
-      const input = document.getElementById("promptInput");
-      const addBtn = document.getElementById("addPromptBtn");
-      const resetBtn = document.getElementById("resetPromptsBtn");
-      const clearBtn = document.getElementById("clearPromptsBtn");
-
-      if (!input || !addBtn) return;
-
-      function addPrompt(){
-        const text = (input.value || "").trim();
-        if (!text) return;
-
-        const arr = getPrompts();
-
-        // prevent exact duplicates
-        if (arr.some(x => x.toLowerCase() === text.toLowerCase())) {
-          input.value = "";
-          return;
-        }
-
-        arr.unshift(text); // add to top
-        savePrompts(arr);
-        input.value = "";
-        renderPromptList();
-      }
-
-      addBtn.addEventListener("click", addPrompt);
-
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") addPrompt();
-      });
-
-      resetBtn?.addEventListener("click", () => {
+    // Reset/Clear buttons
+    document.getElementById("resetPromptsBtn")?.addEventListener("click", () => {
         savePrompts([...DEFAULT_PROMPTS]);
-        renderPromptList();
-      });
+    });
 
-      clearBtn?.addEventListener("click", () => {
-        savePrompts([...DEFAULT_PROMPTS]); // or if you truly want empty, remove item
-        renderPromptList();
-      });
+    document.getElementById("clearPromptsBtn")?.addEventListener("click", () => {
+        savePrompts(["How was your day?"]); // Keep at least one safe prompt
+    });
 
-      renderPromptList();
-    }
+    // Initial Render
+    renderPromptList();
 
-    // if you already have escapeHtml in settings.html, reuse it.
-    // If not, include this:
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    initPromptControls();
-
-  </script>
+</script>
 
 </body>
 </html>
